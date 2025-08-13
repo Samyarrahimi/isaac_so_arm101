@@ -410,7 +410,6 @@ class SoArm100RosConCubeCubeLiftEnvCfg_PLAY(SoArm100Ros2CubeCubeLiftEnvCfg):
 
 
 
-
 # @configclass
 # class FrankaCubeLiftEnvCfg(joint_pos_env_cfg.FrankaCubeLiftEnvCfg):
 #     def __post_init__(self):
