@@ -1,10 +1,8 @@
-# # BSD 3-Clause License
-# #
-# # Copyright (c) 2025, Muammer Bay (LycheeAI), Louis Le Lay
-# # All rights reserved.
-# #
-# # SPDX-License-Identifier: BSD-3-Clause
-
+# Copyright (c) 2024-2025, Muammer Bay (LycheeAI), Louis Le Lay
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
 # Copyright (c) 2022-2025, The Isaac Lab Project Developers.
 # All rights reserved.
 #
@@ -20,8 +18,6 @@ The following configurations are available:
         https://github.com/JafarAbdi/ros2_so_arm100
 """
 
-import math
-import os
 from pathlib import Path
 
 import isaaclab.sim as sim_utils

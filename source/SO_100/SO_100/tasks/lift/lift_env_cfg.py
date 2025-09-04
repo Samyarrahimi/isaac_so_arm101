@@ -1,11 +1,9 @@
-# # BSD 3-Clause License
-# #
-# # Copyright (c) 2025, Muammer Bay (LycheeAI), Louis Le Lay
-# # All rights reserved.
-# #
-# # SPDX-License-Identifier: BSD-3-Clause
-
-# Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
+# Copyright (c) 2024-2025, Muammer Bay (LycheeAI), Louis Le Lay
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Copyright (c) 2022-2025, The Isaac Lab Project Developers.
 # All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
@@ -31,7 +29,6 @@ from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.sensors import FrameTransformerCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import (
     FrameTransformerCfg,
     OffsetCfg,
@@ -48,8 +45,6 @@ from isaaclab.markers.config import FRAME_MARKER_CFG  # isort: skip
 # from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 # from isaaclab.utils.visualizer import FRAME_MARKER_CFG
 # from isaaclab.utils.assets import RigidBodyPropertiesCfg
-
-
 
 
 ##
