@@ -1,3 +1,10 @@
+# # BSD 3-Clause License
+# #
+# # Copyright (c) 2025, Muammer Bay (LycheeAI), Louis Le Lay
+# # All rights reserved.
+# #
+# # SPDX-License-Identifier: BSD-3-Clause
+
 # Copyright (c) 2022-2025, The Isaac Lab Project Developers.
 # All rights reserved.
 #
@@ -25,9 +32,8 @@ simulation_app = app_launcher.app
 """Rest everything follows."""
 
 import gymnasium as gym
-from prettytable import PrettyTable
-
 import SO_100.tasks  # noqa: F401
+from prettytable import PrettyTable
 
 
 def main():

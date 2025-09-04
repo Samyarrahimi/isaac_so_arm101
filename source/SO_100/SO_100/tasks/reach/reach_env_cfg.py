@@ -1,3 +1,10 @@
+# # BSD 3-Clause License
+# #
+# # Copyright (c) 2025, Muammer Bay (LycheeAI), Louis Le Lay
+# # All rights reserved.
+# #
+# # SPDX-License-Identifier: BSD-3-Clause
+
 # Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
 # All rights reserved.
 #
@@ -6,6 +13,9 @@
 from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
+
+# import mdp
+import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.managers import ActionTermCfg as ActionTerm
@@ -20,10 +30,6 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
-
-# import mdp
-import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
-
 from SO_100.robots import SO_ARM100_CFG
 
 ##
@@ -63,6 +69,7 @@ class ReachSceneCfg(InteractiveSceneCfg):
 ##
 # MDP settings
 ##
+
 
 @configclass
 class CommandsCfg:
@@ -227,9 +234,10 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
 
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
-            asset_name="robot", 
-            joint_names=["Shoulder_Rotation", "Shoulder_Pitch", "Elbow", "Wrist_Pitch", "Wrist_Roll"], 
-            scale=0.5, use_default_offset=True
+            asset_name="robot",
+            joint_names=["Shoulder_Rotation", "Shoulder_Pitch", "Elbow", "Wrist_Pitch", "Wrist_Roll"],
+            scale=0.5,
+            use_default_offset=True,
         )
         # override command generator body
         # end-effector is along z-direction
@@ -247,4 +255,3 @@ class SoArm100ReachEnvCfg_PLAY(SoArm100ReachEnvCfg):
         self.scene.env_spacing = 2.5
         # disable randomization for play
         self.observations.policy.enable_corruption = False
-
