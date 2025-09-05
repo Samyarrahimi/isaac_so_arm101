@@ -33,3 +33,25 @@ gym.register(
     },
     disable_env_checker=True,
 )
+
+gym.register(
+    id="SO-ARM100-Reach-ROSCON-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.reach_env_cfg:SoArm100ReachRosConEnvCfg",
+        "skrl_cfg_entry_point": f"{agents.__name__}:roscon_skrl_ppo_cfg.yaml",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachRosConPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+gym.register(
+    id="SO-ARM100-Reach-ROSCON-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.reach_env_cfg:SoArm100ReachRosConEnvCfg_PLAY",
+        "skrl_cfg_entry_point": f"{agents.__name__}:roscon_skrl_ppo_cfg.yaml",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachRosConPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
