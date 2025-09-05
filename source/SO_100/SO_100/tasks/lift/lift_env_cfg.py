@@ -315,9 +315,6 @@ class SoArm100CubeCubeLiftEnvCfg(LiftEnvCfg):
             ],
         )
 
-
-
-
 @configclass
 class SoArm100CubeCubeLiftEnvCfg_PLAY(SoArm100CubeCubeLiftEnvCfg):
     def __post_init__(self):
@@ -330,7 +327,7 @@ class SoArm100CubeCubeLiftEnvCfg_PLAY(SoArm100CubeCubeLiftEnvCfg):
         self.observations.policy.enable_corruption = False
 
 @configclass
-class SoArm100Ros2CubeCubeLiftEnvCfg(LiftEnvCfg):
+class SoArm100RosConCubeCubeLiftEnvCfg(LiftEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -392,7 +389,7 @@ class SoArm100Ros2CubeCubeLiftEnvCfg(LiftEnvCfg):
 
 
 @configclass
-class SoArm100Ros2CubeCubeLiftEnvCfg_PLAY(SoArm100Ros2CubeCubeLiftEnvCfg):
+class SoArm100RosConCubeCubeLiftEnvCfg_PLAY(SoArm100Ros2CubeCubeLiftEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -426,10 +423,10 @@ class SoArm100Ros2CubeCubeLiftEnvCfg_PLAY(SoArm100Ros2CubeCubeLiftEnvCfg):
 #             body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(pos=[0.0, 0.0, 0.107]),
 #         )
 
-
+    
 
 @configclass
-class SoArm100Ros2_IK_CubeCubeLiftEnvCfg(SoArm100Ros2CubeCubeLiftEnvCfg):
+class SoArm100RosCon_IK_CubeCubeLiftEnvCfg(SoArm100RosConCubeCubeLiftEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()

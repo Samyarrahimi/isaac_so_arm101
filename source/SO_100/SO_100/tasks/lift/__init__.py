@@ -35,20 +35,20 @@ gym.register(
 
 # Register the SO-100 Cube Lift environment for sim2real
 gym.register(
-    id="SO-ARM100-ROS2-Lift-Cube-v0",
+    id="SO-ARM100-ROSCon-Lift-Cube-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100Ros2CubeCubeLiftEnvCfg",
+        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:LiftRosConCubePPORunnerCfg",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
     },
     disable_env_checker=True,
 )
 
 gym.register(
-    id="SO-ARM100-ROS2-Lift-Cube-Play-v0",
+    id="SO-ARM100-ROSCon-Lift-Cube-Play-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100Ros2CubeCubeLiftEnvCfg_PLAY",
+        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:LiftRosConCubePPORunnerCfg",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
     },
     disable_env_checker=True,
@@ -56,11 +56,11 @@ gym.register(
 
 
 gym.register(
-    id="SO-ARM100-ROS2-IK-Lift-Cube-v0",
+    id="SO-ARM100-ROSCon-IK-Lift-Cube-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100Ros2_IK_CubeCubeLiftEnvCfg",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
+        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100RosCon_IK_CubeCubeLiftEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftIKRosConCubePPORunnerCfg",
     },
     disable_env_checker=True,
 )
