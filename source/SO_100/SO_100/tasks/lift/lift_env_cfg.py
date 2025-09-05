@@ -50,13 +50,10 @@ from isaaclab.envs.mdp.actions.actions_cfg import DifferentialInverseKinematicsA
 # from isaaclab.utils.visualizer import FRAME_MARKER_CFG
 # from isaaclab.utils.assets import RigidBodyPropertiesCfg
 
-
-
 # from . import mdp
 import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
 
 from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROS2_CFG
-
 
 ##
 # Scene definition
@@ -341,7 +338,6 @@ class SoArm100RosConCubeCubeLiftEnvCfg(LiftEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
-
 
         # Set so arm as robot
         self.scene.robot = SO_ARM100_ROS2_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
