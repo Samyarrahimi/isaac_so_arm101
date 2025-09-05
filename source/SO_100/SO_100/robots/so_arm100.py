@@ -94,4 +94,3 @@ SO_ARM100_CFG = ArticulationCfg(
 """Configuration of SO-ARM robot arm."""
 
 # Removed FRANKA_PANDA_HIGH_PD_CFG as it's not applicable
-

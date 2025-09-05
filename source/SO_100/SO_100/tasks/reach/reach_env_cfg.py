@@ -28,7 +28,6 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
-from SO_100.robots import SO_ARM100_CFG
 
 ##
 # Scene definition
@@ -213,4 +212,3 @@ class ReachEnvCfg(ManagerBasedRLEnvCfg):
         self.viewer.eye = (2.5, 2.5, 1.5)
         # simulation settings
         self.sim.dt = 1.0 / 60.0
-

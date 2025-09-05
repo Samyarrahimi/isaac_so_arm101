@@ -44,6 +44,7 @@ class LiftCubePPORunnerCfg(RslRlOnPolicyRunnerCfg):
         max_grad_norm=1.0,
     )
 
+
 @configclass
 class LiftRosConCubePPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
@@ -71,6 +72,7 @@ class LiftRosConCubePPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
+
 
 @configclass
 class LiftIKRosConCubePPORunnerCfg(RslRlOnPolicyRunnerCfg):

@@ -11,8 +11,6 @@
 from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
-
-# from . import mdp
 import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
 from isaaclab.assets import (
     ArticulationCfg,
@@ -29,31 +27,10 @@ from isaaclab.managers import RewardTermCfg as RewTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.sensors.frame_transformer.frame_transformer_cfg import (
-    FrameTransformerCfg,
-    OffsetCfg,
-)
-from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
+from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransformerCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg, UsdFileCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
-from SO_100.robots import SO_ARM100_CFG
-
-from isaaclab.markers.config import FRAME_MARKER_CFG  # isort: skip
-
-from isaaclab.controllers.differential_ik_cfg import DifferentialIKControllerCfg
-from isaaclab.envs.mdp.actions.actions_cfg import DifferentialInverseKinematicsActionCfg
-
-
-# from isaaclab.utils.offset import OffsetCfg
-# from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
-# from isaaclab.utils.visualizer import FRAME_MARKER_CFG
-# from isaaclab.utils.assets import RigidBodyPropertiesCfg
-
-# from . import mdp
-import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
-
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROS2_CFG
 
 ##
 # Scene definition
@@ -258,8 +235,3 @@ class LiftEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.physx.gpu_found_lost_aggregate_pairs_capacity = 1024 * 1024 * 4
         self.sim.physx.gpu_total_aggregate_pairs_capacity = 16 * 1024
         self.sim.physx.friction_correlation_distance = 0.00625
-
-
-
-
-
