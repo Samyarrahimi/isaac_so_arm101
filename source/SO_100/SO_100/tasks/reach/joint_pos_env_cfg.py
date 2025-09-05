@@ -72,24 +72,30 @@ class SoArm100ReachRosConEnvCfg(ReachEnvCfg):
         super().__post_init__()
 
         # switch robot to franka
-        self.scene.robot = SO_ARM100_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = SO_ARM100_ROSCON_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         # override rewards
-        self.rewards.end_effector_position_tracking.params["asset_cfg"].body_names = ["Fixed_Gripper"]
-        self.rewards.end_effector_position_tracking_fine_grained.params["asset_cfg"].body_names = ["Fixed_Gripper"]
-        self.rewards.end_effector_orientation_tracking.params["asset_cfg"].body_names = ["Fixed_Gripper"]
+        self.rewards.end_effector_position_tracking.params["asset_cfg"].body_names = ["wrist_2_link"]
+        self.rewards.end_effector_position_tracking_fine_grained.params["asset_cfg"].body_names = ["wrist_2_link"]
+        self.rewards.end_effector_orientation_tracking.params["asset_cfg"].body_names = ["wrist_2_link"]
 
         self.rewards.end_effector_orientation_tracking.weight = 0.0
 
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
             asset_name="robot",
-            joint_names=["Shoulder_Rotation", "Shoulder_Pitch", "Elbow", "Wrist_Pitch", "Wrist_Roll"],
+            joint_names=[
+                "shoulder_pan_joint",
+                "shoulder_lift_joint",
+                "elbow_joint",
+                "wrist_pitch_joint",
+                "wrist_roll_joint",
+            ],
             scale=0.5,
             use_default_offset=True,
         )
         # override command generator body
         # end-effector is along z-direction
-        self.commands.ee_pose.body_name = ["Fixed_Gripper"]
+        self.commands.ee_pose.body_name = ["wrist_2_link"]
         # self.commands.ee_pose.ranges.pitch = (math.pi, math.pi)
 
 

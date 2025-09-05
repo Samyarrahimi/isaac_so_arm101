@@ -1,9 +1,4 @@
-# Copyright (c) 2024-2025, Muammer Bay (LycheeAI), Louis Le Lay
-# All rights reserved.
-#
-# SPDX-License-Identifier: BSD-3-Clause
-#
-# Copyright (c) 2022-2025, The Isaac Lab Project Developers.
+# Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
 # All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
@@ -11,27 +6,24 @@
 from isaaclab.controllers.differential_ik_cfg import DifferentialIKControllerCfg
 from isaaclab.envs.mdp.actions.actions_cfg import DifferentialInverseKinematicsActionCfg
 from isaaclab.utils import configclass
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROS2_CFG  # noqa: F401
 
-from source.SO_100.SO_100.tasks.lift.joint_pos_env_cfg import (
-    SoArm100RosConCubeCubeLiftEnvCfg,
-)
+from .joint_pos_env_cfg import SoArm100ReachRosConEnvCfg
 
-# from isaaclab.utils.offset import OffsetCfg
-# from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
-# from isaaclab.utils.visualizer import FRAME_MARKER_CFG
-# from isaaclab.utils.assets import RigidBodyPropertiesCfg
+##
+# Pre-defined configs
+##
+from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
 
 
 @configclass
-class SoArm100RosCon_IK_CubeLiftEnvCfg(SoArm100RosConCubeCubeLiftEnvCfg):
+class SoArm100RosCon_IK_ReachEnvCfg(SoArm100ReachRosConEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
 
         # Set Franka as robot
         # We switch here to a stiffer PD controller for IK tracking to be better.
-        self.scene.robot = SO_ARM100_ROS2_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = SO_ARM100_ROSCON_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
         # Set actions for the specific robot type (franka)
         self.actions.arm_action = DifferentialInverseKinematicsActionCfg(
@@ -50,7 +42,7 @@ class SoArm100RosCon_IK_CubeLiftEnvCfg(SoArm100RosConCubeCubeLiftEnvCfg):
 
 
 @configclass
-class SoArm100RosCon_IK_CubeLiftEnvCfg_PLAY(SoArm100RosCon_IK_CubeLiftEnvCfg):
+class SoArm100RosCon_IK_ReachEnvCfg_PLAY(SoArm100RosCon_IK_ReachEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
