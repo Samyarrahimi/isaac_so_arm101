@@ -16,7 +16,10 @@ from . import agents
 # Register Gym environments.
 ##
 
-# Register the SO-100 Reach environment
+### CLASSIC ENVIRONMENTS
+
+# Joint position controller
+
 gym.register(
     id="SO-ARM100-Reach-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
@@ -38,6 +41,10 @@ gym.register(
     },
     disable_env_checker=True,
 )
+
+### ROSCON ENVIRONMENTS
+
+# Joint position controller
 
 gym.register(
     id="SO-ARM100-Reach-ROSCON-v0",
