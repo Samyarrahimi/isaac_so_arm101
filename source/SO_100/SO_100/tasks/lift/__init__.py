@@ -1,3 +1,8 @@
+# Copyright (c) 2024-2025, Muammer Bay (LycheeAI), Louis Le Lay
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
 # Copyright (c) 2022-2025, The Isaac Lab Project Developers.
 # All rights reserved.
 #
@@ -31,6 +36,7 @@ gym.register(
     },
     disable_env_checker=True,
 )
+
 
 
 # Register the SO-100 Cube Lift environment for sim2real
