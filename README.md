@@ -1,5 +1,17 @@
 ### Isaac Lab – SO‑ARM100 / SO‑ARM101 Project
 
+[![IsaacSim](https://img.shields.io/badge/IsaacSim-4.5.0/5.0.0-green.svg)](https://docs.isaacsim.omniverse.nvidia.com/latest/index.html)
+[![IsaacLab](https://img.shields.io/badge/IsaacLab-2.2.0-green.svg)](https://isaac-sim.github.io/IsaacLab/main/index.html)
+[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://docs.python.org/3/whatsnew/3.11.html)
+[![Linux platform](https://img.shields.io/badge/platform-linux--64-orange.svg)](https://releases.ubuntu.com/22.04/)
+[![Windows platform](https://img.shields.io/badge/platform-windows--64-orange.svg)](https://www.microsoft.com/en-us/)
+[![DOI](https://zenodo.org/badge/968772915.svg)](https://zenodo.org/badge/latestdoi/968772915)
+[![License](https://img.shields.io/badge/license-BSD--3-yellow.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+<!-- TODO: find a way to add this pre-commit badge but will need correcting the CI pipeline -->
+<!-- [![pre-commit](https://img.shields.io/github/actions/workflow/status/MuammerBay/isaac_so_arm101/ci-test.yaml?logo=ci-test&logoColor=white&label=ci-test&color=brightgreen)](https://github.com/MuammerBay/isaac_so_arm101/actions/workflows/ci-test.yml) -->
+
+
 This repository implements tasks for the SO‑ARM100 and SO‑ARM101 robots using Isaac Lab. It serves as the foundation for several tutorials in the LycheeAI Hub series [Project: SO‑ARM101 × Isaac Sim × Isaac Lab](https://lycheeai-hub.com/project-so-arm101-x-isaac-sim-x-isaac-lab-tutorial-series).
 
 📰 **News featuring this repository:**
