@@ -78,7 +78,11 @@ python scripts/rsl_rl/play.py --task SO-ARM100-Reach-Play-v0
 
 This ensures that your policy performs as expected in Isaac Lab before attempting real‑world transfer.
 
-## 🔄 Sim2Real Transfer
+## 🧩 Sim2Sim Transfer
+
+_Work in progress._
+
+## 🛠️ Sim2Real Transfer
 
 _Work in progress._
 
