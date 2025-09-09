@@ -1,5 +1,17 @@
 ### Isaac Lab – SO‑ARM100 / SO‑ARM101 Project
 
+[![IsaacSim](https://img.shields.io/badge/IsaacSim-4.5.0/5.0.0-green.svg)](https://docs.isaacsim.omniverse.nvidia.com/latest/index.html)
+[![IsaacLab](https://img.shields.io/badge/IsaacLab-2.2.0-green.svg)](https://isaac-sim.github.io/IsaacLab/main/index.html)
+[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](https://docs.python.org/3/whatsnew/3.11.html)
+[![Linux platform](https://img.shields.io/badge/platform-linux--64-orange.svg)](https://releases.ubuntu.com/22.04/)
+[![Windows platform](https://img.shields.io/badge/platform-windows--64-orange.svg)](https://www.microsoft.com/en-us/)
+[![DOI](https://zenodo.org/badge/968772915.svg)](https://zenodo.org/badge/latestdoi/968772915)
+[![License](https://img.shields.io/badge/license-BSD--3-yellow.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
+<!-- TODO: find a way to add this pre-commit badge but will need correcting the CI pipeline -->
+<!-- [![pre-commit](https://img.shields.io/github/actions/workflow/status/MuammerBay/isaac_so_arm101/ci-test.yaml?logo=ci-test&logoColor=white&label=ci-test&color=brightgreen)](https://github.com/MuammerBay/isaac_so_arm101/actions/workflows/ci-test.yml) -->
+
+
 This repository implements tasks for the SO‑ARM100 and SO‑ARM101 robots using Isaac Lab. It serves as the foundation for several tutorials in the LycheeAI Hub series [Project: SO‑ARM101 × Isaac Sim × Isaac Lab](https://lycheeai-hub.com/project-so-arm101-x-isaac-sim-x-isaac-lab-tutorial-series).
 
 📰 **News featuring this repository:**
@@ -66,7 +78,11 @@ python scripts/rsl_rl/play.py --task SO-ARM100-Reach-Play-v0
 
 This ensures that your policy performs as expected in Isaac Lab before attempting real‑world transfer.
 
-## 🔄 Sim2Real Transfer
+## 🧩 Sim2Sim Transfer
+
+_Work in progress._
+
+## 🛠️ Sim2Real Transfer
 
 _Work in progress._
 
@@ -101,12 +117,12 @@ If you use this work, please cite it as:
 
 ```bibtex
 @software{Louis_Isaac_Lab_2025,
-author = {Louis, Le Lay and Muammer, Bay},
-doi = {https://doi.org/10.5281/zenodo.16794229},
-license = {BSD-3-Clause},
-month = apr,
-title = {{Isaac Lab – SO‑ARM100 / SO‑ARM101 Project}},
-url = {https://github.com/MuammerBay/isaac_so_arm101},
-version = {1.1.0},
-year = {2025}
+   author = {Louis, Le Lay and Muammer, Bay},
+   doi = {https://doi.org/10.5281/zenodo.16794229},
+   license = {BSD-3-Clause},
+   month = apr,
+   title = {Isaac Lab – SO‑ARM100 / SO‑ARM101 Project},
+   url = {https://github.com/MuammerBay/isaac_so_arm101},
+   version = {1.1.0},
+   year = {2025}
 }
