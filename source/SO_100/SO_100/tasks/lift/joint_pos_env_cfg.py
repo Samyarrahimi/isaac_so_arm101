@@ -20,15 +20,15 @@ from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROS2_CFG  # noqa: F401
+from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
 
-from source.SO_100.SO_100.tasks.lift.lift_env_cfg import LiftEnvCfg
+from SO_100.tasks.lift.lift_env_cfg import LiftEnvCfg
 
 from isaaclab.markers.config import FRAME_MARKER_CFG  # isort: skip
 
 
 @configclass
-class SoArm100CubeCubeLiftEnvCfg(LiftEnvCfg):
+class SoArm100LiftCubeEnvCfg(LiftEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -91,7 +91,7 @@ class SoArm100CubeCubeLiftEnvCfg(LiftEnvCfg):
 
 
 @configclass
-class SoArm100CubeCubeLiftEnvCfg_PLAY(SoArm100CubeCubeLiftEnvCfg):
+class SoArm100LiftCubeEnvCfg_PLAY(SoArm100LiftCubeEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -103,13 +103,13 @@ class SoArm100CubeCubeLiftEnvCfg_PLAY(SoArm100CubeCubeLiftEnvCfg):
 
 
 @configclass
-class SoArm100RosConCubeCubeLiftEnvCfg(LiftEnvCfg):
+class SoArm100LiftCubeRosConEnvCfg(LiftEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
 
         # Set so arm as robot
-        self.scene.robot = SO_ARM100_ROS2_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = SO_ARM100_ROSCON_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
@@ -172,7 +172,30 @@ class SoArm100RosConCubeCubeLiftEnvCfg(LiftEnvCfg):
 
 
 @configclass
-class SoArm100RosConCubeCubeLiftEnvCfg_PLAY(SoArm100RosConCubeCubeLiftEnvCfg):
+class SoArm100LiftCubeRosConEnvCfg_PLAY(SoArm100LiftCubeRosConEnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+        # make a smaller scene for play
+        self.scene.num_envs = 50
+        self.scene.env_spacing = 2.5
+        # disable randomization for play
+        self.observations.policy.enable_corruption = False
+
+
+
+@configclass
+class SoArm100LiftCubePosRosConEnvCfg(SoArm100LiftCubeRosConEnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+
+        self.observations.policy.joint_vel = None
+
+
+
+@configclass
+class SoArm100LiftCubePosRosConEnvCfg_PLAY(SoArm100LiftCubePosRosConEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()

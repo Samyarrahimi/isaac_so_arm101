@@ -24,7 +24,7 @@ gym.register(
     id="SO-ARM100-Lift-Cube-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100CubeCubeLiftEnvCfg",
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubeEnvCfg",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
     },
     disable_env_checker=True,
@@ -34,7 +34,7 @@ gym.register(
     id="SO-ARM100-Lift-Cube-Play-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100CubeCubeLiftEnvCfg_PLAY",
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubeEnvCfg_PLAY",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
     },
     disable_env_checker=True,
@@ -45,21 +45,21 @@ gym.register(
 # Joint position controller
 
 gym.register(
-    id="SO-ARM100-ROSCon-Lift-Cube-v0",
+    id="SO-ARM100-Lift-Cube-ROSCon-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:LiftRosConCubePPORunnerCfg",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubeRosConEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubeRosConPPORunnerCfg",
     },
     disable_env_checker=True,
 )
 
 gym.register(
-    id="SO-ARM100-ROSCon-Lift-Cube-Play-v0",
+    id="SO-ARM100-Lift-Cube-ROSCon-Play-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:LiftRosConCubePPORunnerCfg",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubeRosConEnvCfg_PLAY",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubeRosConPPORunnerCfg",
     },
     disable_env_checker=True,
 )
@@ -67,21 +67,67 @@ gym.register(
 # Relative IK controller
 
 gym.register(
-    id="SO-ARM100-ROSCon-IK-Lift-Cube-v0",
+    id="SO-ARM100-Lift-Cube-ROSCon-IK-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100RosCon_IK_CubeLiftEnvCfg",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftIKRosConCubePPORunnerCfg",
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100LiftCubeRosCon_IK_EnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubeRosConIKPPORunnerCfg",
     },
     disable_env_checker=True,
 )
 
 gym.register(
-    id="SO-ARM100-ROSCon-IK-Lift-Cube-Play-v0",
+    id="SO-ARM100-Lift-Cube-ROSCon-IK-Play-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.lift_env_cfg:SoArm100RosCon_IK_CubeLiftEnvCfg_PLAY",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftIKRosConCubePPORunnerCfg",
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100LiftCubeRosCon_IK_EnvCfg_PLAY",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubeRosConIKPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+### ROSCON ENVIRONMENTS with only pos obs
+
+# Joint position controller
+
+gym.register(
+    id="SO-ARM100-Lift-Cube-Pos-ROSCon-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubePosRosConEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePosRosConPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+gym.register(
+    id="SO-ARM100-Lift-Cube-Pos-ROSCon-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubePosRosConEnvCfg_PLAY",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePosRosConPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+# Relative IK controller
+
+gym.register(
+    id="SO-ARM100-Lift-Cube-Pos-ROSCon-IK-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100LiftCubePosRosCon_IK_EnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePosRosConIKPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+gym.register(
+    id="SO-ARM100-Lift-Cube-Pos-ROSCon-IK-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100LiftCubePosRosCon_IK_EnvCfg_PLAY",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePosRosConIKPPORunnerCfg",
     },
     disable_env_checker=True,
 )

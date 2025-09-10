@@ -15,8 +15,10 @@ from .joint_pos_env_cfg import SoArm100ReachRosConEnvCfg
 from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
 
 
+### ROSCON ENVIRONMENTS
+
 @configclass
-class SoArm100RosCon_IK_ReachEnvCfg(SoArm100ReachRosConEnvCfg):
+class SoArm100ReachRosCon_IK_EnvCfg(SoArm100ReachRosConEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -36,13 +38,33 @@ class SoArm100RosCon_IK_ReachEnvCfg(SoArm100ReachRosConEnvCfg):
                 "wrist_roll_joint",
             ],
             body_name="wrist_2_link",
-            controller=DifferentialIKControllerCfg(command_type="pose", use_relative_mode=False, ik_method="dls"),
+            controller=DifferentialIKControllerCfg(command_type="pose", use_relative_mode=True, ik_method="dls"),
+            scale=0.5,
             body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(pos=[-0.005, -0.1, 0.0]),
         )
 
 
 @configclass
-class SoArm100RosCon_IK_ReachEnvCfg_PLAY(SoArm100RosCon_IK_ReachEnvCfg):
+class SoArm100ReachRosCon_IK_EnvCfg_PLAY(SoArm100ReachRosCon_IK_EnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+        # make a smaller scene for play
+        self.scene.num_envs = 50
+        self.scene.env_spacing = 2.5
+        # disable randomization for play
+        self.observations.policy.enable_corruption = False
+
+@configclass
+class SoArm100ReachPosRosCon_IK_EnvCfg(SoArm100ReachRosCon_IK_EnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+
+        self.observations.policy.join_vel = None
+
+@configclass
+class SoArm100ReachPosRosCon_IK_EnvCfg_PLAY(SoArm100ReachPosRosCon_IK_EnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()

@@ -51,7 +51,6 @@ gym.register(
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
         "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100ReachRosConEnvCfg",
-        "skrl_cfg_entry_point": f"{agents.__name__}:roscon_skrl_ppo_cfg.yaml",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachRosConPPORunnerCfg",
     },
     disable_env_checker=True,
@@ -62,7 +61,6 @@ gym.register(
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
         "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100ReachRosConEnvCfg_PLAY",
-        "skrl_cfg_entry_point": f"{agents.__name__}:roscon_skrl_ppo_cfg.yaml",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachRosConPPORunnerCfg",
     },
     disable_env_checker=True,
@@ -71,21 +69,69 @@ gym.register(
 # Relative IK controller
 
 gym.register(
-    id="SO-ARM100-Reach-IK-ROSCON-v0",
+    id="SO-ARM100-Reach-ROSCON-IK-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100RosCon_IK_ReachEnvCfg",
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100ReachRosCon_IK_EnvCfg",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachRosConIKPPORunnerCfg",
     },
     disable_env_checker=True,
 )
 
 gym.register(
-    id="SO-ARM100-Reach-IK-ROSCON-Play-v0",
+    id="SO-ARM100-Reach-ROSCON-IK-Play-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100RosCon_IK_ReachEnvCfg_PLAY",
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100ReachRosCon_IK_EnvCfg_PLAY",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachRosConIKPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+### ROSCON ENVIRONMENTS WITH ONLY POSITION OBSERVATIONS
+
+# Joint position controller
+
+gym.register(
+    id="SO-ARM100-Reach-Pos-ROSCON-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100ReachPosRosConEnvCfg",
+        "skrl_cfg_entry_point": f"{agents.__name__}:roscon_skrl_ppo_cfg.yaml",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachPosRosConPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+gym.register(
+    id="SO-ARM100-Reach-Pos-ROSCON-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100ReachPosRosConEnvCfg_PLAY",
+        "skrl_cfg_entry_point": f"{agents.__name__}:roscon_skrl_ppo_cfg.yaml",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachPosRosConPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+# Relative IK controller
+
+gym.register(
+    id="SO-ARM100-Reach-Pos-ROSCON-IK-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100ReachPosRosCon_IK_EnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachPosRosConIKPPORunnerCfg",
+    },
+    disable_env_checker=True,
+)
+
+gym.register(
+    id="SO-ARM100-Reach-Pos-ROSCON-IK-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    kwargs={
+        "env_cfg_entry_point": f"{__name__}.ik_rel_env_cfg:SoArm100ReachPosRosCon_IK_EnvCfg_PLAY",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:ReachPosRosConIKPPORunnerCfg",
     },
     disable_env_checker=True,
 )

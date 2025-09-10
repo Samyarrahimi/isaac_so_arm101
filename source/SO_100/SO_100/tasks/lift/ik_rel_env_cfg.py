@@ -11,10 +11,10 @@
 from isaaclab.controllers.differential_ik_cfg import DifferentialIKControllerCfg
 from isaaclab.envs.mdp.actions.actions_cfg import DifferentialInverseKinematicsActionCfg
 from isaaclab.utils import configclass
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROS2_CFG  # noqa: F401
+from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
 
-from source.SO_100.SO_100.tasks.lift.joint_pos_env_cfg import (
-    SoArm100RosConCubeCubeLiftEnvCfg,
+from SO_100.tasks.lift.joint_pos_env_cfg import (
+    SoArm100LiftCubeRosConEnvCfg,
 )
 
 # from isaaclab.utils.offset import OffsetCfg
@@ -24,14 +24,14 @@ from source.SO_100.SO_100.tasks.lift.joint_pos_env_cfg import (
 
 
 @configclass
-class SoArm100RosCon_IK_CubeLiftEnvCfg(SoArm100RosConCubeCubeLiftEnvCfg):
+class SoArm100LiftCubeRosCon_IK_EnvCfg(SoArm100LiftCubeRosConEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
 
         # Set Franka as robot
         # We switch here to a stiffer PD controller for IK tracking to be better.
-        self.scene.robot = SO_ARM100_ROS2_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = SO_ARM100_ROSCON_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
         # Set actions for the specific robot type (franka)
         self.actions.arm_action = DifferentialInverseKinematicsActionCfg(
@@ -44,13 +44,34 @@ class SoArm100RosCon_IK_CubeLiftEnvCfg(SoArm100RosConCubeCubeLiftEnvCfg):
                 "wrist_roll_joint",
             ],
             body_name="wrist_2_link",
-            controller=DifferentialIKControllerCfg(command_type="pose", use_relative_mode=False, ik_method="dls"),
+            controller=DifferentialIKControllerCfg(command_type="pose", use_relative_mode=True, ik_method="dls"),
+            scale=0.5,
             body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(pos=[-0.005, -0.1, 0.0]),
         )
 
 
 @configclass
-class SoArm100RosCon_IK_CubeLiftEnvCfg_PLAY(SoArm100RosCon_IK_CubeLiftEnvCfg):
+class SoArm100LiftCubeRosCon_IK_EnvCfg_PLAY(SoArm100LiftCubeRosCon_IK_EnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+        # make a smaller scene for play
+        self.scene.num_envs = 50
+        self.scene.env_spacing = 2.5
+        # disable randomization for play
+        self.observations.policy.enable_corruption = False
+
+@configclass
+class SoArm100LiftCubePosRosCon_IK_EnvCfg(SoArm100LiftCubeRosCon_IK_EnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+
+        self.observations.policy.joint_vel = None
+
+
+@configclass
+class SoArm100LiftCubePosRosCon_IK_EnvCfg_PLAY(SoArm100LiftCubePosRosCon_IK_EnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()

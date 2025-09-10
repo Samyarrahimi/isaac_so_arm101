@@ -25,6 +25,8 @@ from SO_100.tasks.reach.reach_env_cfg import ReachEnvCfg
 ##
 
 
+### CLASSIC ENVIRONMENTS
+
 @configclass
 class SoArm100ReachEnvCfg(ReachEnvCfg):
     def __post_init__(self):
@@ -65,6 +67,8 @@ class SoArm100ReachEnvCfg_PLAY(SoArm100ReachEnvCfg):
         self.observations.policy.enable_corruption = False
 
 
+### ROSCON ENVIRONMENTS
+
 @configclass
 class SoArm100ReachRosConEnvCfg(ReachEnvCfg):
     def __post_init__(self):
@@ -95,6 +99,26 @@ class SoArm100ReachRosConEnvCfg(ReachEnvCfg):
 
 @configclass
 class SoArm100ReachRosConEnvCfg_PLAY(SoArm100ReachEnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+        # make a smaller scene for play
+        self.scene.num_envs = 50
+        self.scene.env_spacing = 2.5
+        # disable randomization for play
+        self.observations.policy.enable_corruption = False
+
+@configclass
+class SoArm100ReachPosRosConEnvCfg(SoArm100ReachRosConEnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+
+        self.observations.policy.joint_vel = None
+
+
+@configclass
+class SoArm100ReachPosRosConEnvCfg_PLAY(SoArm100ReachPosRosConEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
