@@ -7,7 +7,7 @@
 [![Windows platform](https://img.shields.io/badge/platform-windows--64-orange.svg)](https://www.microsoft.com/en-us/)
 [![DOI](https://zenodo.org/badge/968772915.svg)](https://zenodo.org/badge/latestdoi/968772915)
 [![License](https://img.shields.io/badge/license-BSD--3-yellow.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![CI Test](https://github.com/MuammerBay/isaac_so_arm101/actions/workflows/ci-test.yml/badge.svg?branch=main)](https://github.com/MuammerBay/isaac_so_arm101/actions/workflows/ci-test.yml)
+[![ci-test](https://github.com/MuammerBay/isaac_so_arm101/actions/workflows/ci-test.yml/badge.svg?branch=main)](https://github.com/MuammerBay/isaac_so_arm101/actions/workflows/ci-test.yml)
 
 This repository implements tasks for the SO‑ARM100 and SO‑ARM101 robots using Isaac Lab. It serves as the foundation for several tutorials in the LycheeAI Hub series [Project: SO‑ARM101 × Isaac Sim × Isaac Lab](https://lycheeai-hub.com/project-so-arm101-x-isaac-sim-x-isaac-lab-tutorial-series).
 
