@@ -25,6 +25,9 @@ from SO_100.tasks.lift.lift_env_cfg import LiftEnvCfg
 
 from isaaclab.markers.config import FRAME_MARKER_CFG  # isort: skip
 
+# ----------------------------------------------------------------
+# --------------- LycheeAI live asset ----------------------------
+# ----------------------------------------------------------------
 
 @configclass
 class SoArm100LiftCubeEnvCfg(LiftEnvCfg):
