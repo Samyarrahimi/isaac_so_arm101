@@ -25,8 +25,6 @@ from SO_100.tasks.reach.reach_env_cfg import ReachEnvCfg
 ##
 
 
-### CLASSIC ENVIRONMENTS
-
 @configclass
 class SoArm100ReachEnvCfg(ReachEnvCfg):
     def __post_init__(self):
