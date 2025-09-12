@@ -19,7 +19,9 @@ from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
 
 from .joint_pos_env_cfg import SoArm100ReachRosConEnvCfg
 
-### ROSCON ENVIRONMENTS
+# ----------------------------------------------------------------
+# --------------- ROSCON ES 2025 asset ---------------------------
+# ----------------------------------------------------------------
 
 
 @configclass
