@@ -77,6 +77,7 @@ class ReachRosConPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         max_grad_norm=1.0,
     )
 
+
 @configclass
 class ReachRosConIKPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24

@@ -1,3 +1,13 @@
+# Copyright (c) 2024-2025, Muammer Bay (LycheeAI), Louis Le Lay
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Copyright (c) 2022-2025, The Isaac Lab Project Developers.
+# All rights reserved.
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 # Copyright (c) 2022-2025, The Isaac Lab Project Developers (https://github.com/isaac-sim/IsaacLab/blob/main/CONTRIBUTORS.md).
 # All rights reserved.
 #
@@ -7,15 +17,15 @@ from isaaclab.controllers.differential_ik_cfg import DifferentialIKControllerCfg
 from isaaclab.envs.mdp.actions.actions_cfg import DifferentialInverseKinematicsActionCfg
 from isaaclab.utils import configclass
 
-from .joint_pos_env_cfg import SoArm100ReachRosConEnvCfg
-
 ##
 # Pre-defined configs
 ##
 from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
 
+from .joint_pos_env_cfg import SoArm100ReachRosConEnvCfg
 
 ### ROSCON ENVIRONMENTS
+
 
 @configclass
 class SoArm100ReachRosCon_IK_EnvCfg(SoArm100ReachRosConEnvCfg):
