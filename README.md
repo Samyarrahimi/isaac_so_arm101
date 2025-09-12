@@ -1,4 +1,4 @@
-### Isaac Lab – SO‑ARM100 / SO‑ARM101 Project
+# Isaac Lab – SO‑ARM100 / SO‑ARM101 Project
 
 [![IsaacSim](https://img.shields.io/badge/IsaacSim-4.5.0/5.0.0-green.svg)](https://docs.isaacsim.omniverse.nvidia.com/latest/index.html)
 [![IsaacLab](https://img.shields.io/badge/IsaacLab-2.2.0-green.svg)](https://isaac-sim.github.io/IsaacLab/main/index.html)
@@ -11,13 +11,18 @@
 
 This repository implements tasks for the SO‑ARM100 and SO‑ARM101 robots using Isaac Lab. It serves as the foundation for several tutorials in the LycheeAI Hub series [Project: SO‑ARM101 × Isaac Sim × Isaac Lab](https://lycheeai-hub.com/project-so-arm101-x-isaac-sim-x-isaac-lab-tutorial-series).
 
-📰 **News featuring this repository:**
+### 📰 News featuring this repository:
 
 - **10 June 2025:** 🎥 LycheeAI Channel Premiere: SO-ARM101 tutorial series announcement! [🔗 Watch on YouTube](https://www.youtube.com/watch?v=2uH7Zn4SAVI)
 - **23 April 2025:** 🤖 NVIDIA Omniverse Livestream: Training a Robot from Scratch in Simulation (URDF → OpenUSD). [🔗 Watch on YouTube](https://www.youtube.com/watch?v=_HMk7I-vSBQ)
 - **19 April 2025:** 🎥 LycheeAI Tutorial: How to Create External Projects in Isaac Lab. [🔗 Watch on YouTube](https://www.youtube.com/watch?v=i51krqsk8ps)
 
-🎬 **Watch the Lift Task in action**
+### 🤖 Don’t have a SO-ARM? → Buy one with a Discount: `LYCHEEAI5` !
+
+There are official vendors who sell all the required parts and already assembled kits such as WowRobo who sponsor this project. Use code `LYCHEEAI5` at checkout for a 5% discount on the [SO-ARM101](https://shop.wowrobo.com/products/so-arm101-diy-kit-assembled-version-1). Now also for [LeKiwi](https://shop.wowrobo.com/products/lekiwi-mobile-robot).
+
+
+### 🎬 Watch the Lift Task in action
 
 ![rl-video-step-0](https://github.com/user-attachments/assets/890e3a9d-5cbd-46a5-9317-37d0f2511684)
 
