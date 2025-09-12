@@ -42,7 +42,7 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
         self.rewards.end_effector_position_tracking_fine_grained.params["asset_cfg"].body_names = ["Fixed_Gripper"]
         self.rewards.end_effector_orientation_tracking.params["asset_cfg"].body_names = ["Fixed_Gripper"]
 
-        self.rewards.end_effector_orientation_tracking.weight = 0.0
+        # TODO: reorient command target
 
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
@@ -87,8 +87,6 @@ class SoArm100ReachRosConEnvCfg(ReachEnvCfg):
         self.rewards.end_effector_position_tracking_fine_grained.params["asset_cfg"].body_names = ["wrist_2_link"]
         self.rewards.end_effector_orientation_tracking.params["asset_cfg"].body_names = ["wrist_2_link"]
 
-        self.rewards.end_effector_orientation_tracking.weight = 0.0
-
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
             asset_name="robot",
@@ -103,7 +101,7 @@ class SoArm100ReachRosConEnvCfg(ReachEnvCfg):
 
 
 @configclass
-class SoArm100ReachRosConEnvCfg_PLAY(SoArm100ReachEnvCfg):
+class SoArm100ReachRosConEnvCfg_PLAY(SoArm100ReachRosConEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
