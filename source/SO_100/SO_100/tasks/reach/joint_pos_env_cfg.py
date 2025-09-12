@@ -87,6 +87,8 @@ class SoArm100ReachRosConEnvCfg(ReachEnvCfg):
         self.rewards.end_effector_position_tracking_fine_grained.params["asset_cfg"].body_names = ["wrist_2_link"]
         self.rewards.end_effector_orientation_tracking.params["asset_cfg"].body_names = ["wrist_2_link"]
 
+        self.rewards.end_effector_orientation_tracking.weight = 0.0
+
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
             asset_name="robot",
