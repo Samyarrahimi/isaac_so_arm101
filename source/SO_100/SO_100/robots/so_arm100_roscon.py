@@ -98,4 +98,23 @@ SO_ARM100_ROSCON_CFG = ArticulationCfg(
     soft_joint_pos_limit_factor=1.0,
 )
 
-"""Configuration of SO-ARM robot arm more adapted for sim2real."""
+"""Configuration of SO-ARM robot more adapted for sim2real."""
+
+SO_ARM100_ROSCON_HIGH_PD_CFG = SO_ARM100_ROSCON_CFG.copy()
+SO_ARM100_ROSCON_HIGH_PD_CFG.spawn.rigid_props.disable_gravity = True
+SO_ARM100_ROSCON_HIGH_PD_CFG.actuators["arm"].stiffness ={
+    "shoulder_pan_joint": 1500.0,  # Highest - moves all mass
+    "shoulder_lift_joint": 1500.0,  # Slightly less than rotation
+    "elbow_joint": 1000.0,  # Reduced based on less mass
+    "wrist_pitch_joint": 500.0,  # Reduced for less mass
+    "wrist_roll_joint": 500.0,  # Low mass to move
+}
+SO_ARM100_ROSCON_HIGH_PD_CFG.actuators["arm"].damping={
+    "shoulder_pan_joint": 300.0,
+    "shoulder_lift_joint": 300.0,
+    "elbow_joint": 200.0,
+    "wrist_pitch_joint": 100.0,
+    "wrist_roll_joint": 100.0,
+}
+
+"""Configuration of SO-ARM robot with stiffer PD control."""
