@@ -28,6 +28,7 @@ from SO_100.tasks.reach.reach_env_cfg import ReachEnvCfg
 # --------------- LycheeAI live asset ----------------------------
 # ----------------------------------------------------------------
 
+
 @configclass
 class SoArm100ReachEnvCfg(ReachEnvCfg):
     def __post_init__(self):
@@ -67,9 +68,11 @@ class SoArm100ReachEnvCfg_PLAY(SoArm100ReachEnvCfg):
         # disable randomization for play
         self.observations.policy.enable_corruption = False
 
+
 # ----------------------------------------------------------------
 # --------------- ROSCON ES 2025 asset ---------------------------
 # ----------------------------------------------------------------
+
 
 @configclass
 class SoArm100ReachRosConEnvCfg(ReachEnvCfg):
