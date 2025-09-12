@@ -110,11 +110,11 @@ SO_ARM100_ROSCON_HIGH_PD_CFG.actuators["arm"].stiffness ={
     "wrist_roll_joint": 300.0,  # Low mass to move
 }
 SO_ARM100_ROSCON_HIGH_PD_CFG.actuators["arm"].damping={
-    "shoulder_pan_joint": 100.0,
-    "shoulder_lift_joint": 100.0,
-    "elbow_joint": 80.0,
-    "wrist_pitch_joint": 60.0,
-    "wrist_roll_joint": 60.0,
+    "shoulder_pan_joint": 150.0,
+    "shoulder_lift_joint": 150.0,
+    "elbow_joint": 120.0,
+    "wrist_pitch_joint": 90.0,
+    "wrist_roll_joint": 90.0,
 }
 
 """Configuration of SO-ARM robot with stiffer PD control."""
