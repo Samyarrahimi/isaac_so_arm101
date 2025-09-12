@@ -15,7 +15,7 @@ from isaaclab.utils import configclass
 ##
 # Pre-defined configs
 ##
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
+from SO_100.robots import SO_ARM100_ROSCON_HIGH_PD_CFG  # noqa: F401
 
 from .joint_pos_env_cfg import SoArm100ReachRosConEnvCfg
 
@@ -32,7 +32,7 @@ class SoArm100ReachRosCon_IK_EnvCfg(SoArm100ReachRosConEnvCfg):
 
         # Set Franka as robot
         # We switch here to a stiffer PD controller for IK tracking to be better.
-        self.scene.robot = SO_ARM100_ROSCON_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = SO_ARM100_ROSCON_HIGH_PD_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
         # Set actions for the specific robot type (franka)
         self.actions.arm_action = DifferentialInverseKinematicsActionCfg(
