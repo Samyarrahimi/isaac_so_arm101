@@ -11,6 +11,8 @@
 from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
+import os
+os.environ["HYDRA_FULL_ERROR"] = "1"
 
 # from . import mdp
 import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
