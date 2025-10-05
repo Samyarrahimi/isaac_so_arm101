@@ -18,6 +18,7 @@ import isaaclab.sim as sim_utils
 # using lift mdp because of object related functions such as object_ee_distance, object_goal_distance, object_position_in_robot_root_frame, etc.
 import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg, RigidObjectCfg, DeformableObjectCfg
+from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransformerCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.managers import ActionTermCfg as ActionTerm
@@ -73,6 +74,15 @@ class ReachObjectSceneCfg(InteractiveSceneCfg):
     ee_frame: FrameTransformerCfg = MISSING
     cube_marker: FrameTransformerCfg = MISSING
 
+    # context camera
+    context_camera_mesh = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/Table/Context_Camera",
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(1.0, -1.0, 1.3), rot=(0.8785, -0.36, -0.07, 0.3)),
+        spawn=UsdFileCfg(
+            usd_path=f"{ISAAC_NUCLEUS_DIR}/Sensors/Sensing/SG2/H60YA/Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd",
+            scale=(1.0, 1.0, 1.0)
+        ),
+    )
 
 ##
 # MDP settings

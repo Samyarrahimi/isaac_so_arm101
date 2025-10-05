@@ -24,17 +24,12 @@ from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransf
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.markers.config import FRAME_MARKER_CFG
 
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
+from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG, SO_ARM100_CAMERA_CFG  # noqa: F401
 from SO_100.tasks.reach_object.reach_object_env_cfg import ReachObjectEnvCfg
 
 ##
 # Scene definition
 ##
-
-# ----------------------------------------------------------------
-# --------------- LycheeAI live asset ----------------------------
-# ----------------------------------------------------------------
-
 
 @configclass
 class SoArm100ReachObjectEnvCfg(ReachObjectEnvCfg):
@@ -43,7 +38,7 @@ class SoArm100ReachObjectEnvCfg(ReachObjectEnvCfg):
         super().__post_init__()
 
         # switch robot to franka
-        self.scene.robot = SO_ARM100_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = SO_ARM100_CAMERA_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
 
         # TODO: reorient command target
 
@@ -87,7 +82,7 @@ class SoArm100ReachObjectEnvCfg(ReachObjectEnvCfg):
         marker_cfg.prim_path = "/Visuals/FrameTransformer"
         self.scene.ee_frame = FrameTransformerCfg(
             prim_path="{ENV_REGEX_NS}/Robot/Base",
-            debug_vis=True,
+            debug_vis=False,
             visualizer_cfg=marker_cfg,
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
@@ -106,7 +101,7 @@ class SoArm100ReachObjectEnvCfg(ReachObjectEnvCfg):
         self.scene.cube_marker = FrameTransformerCfg(
             prim_path="{ENV_REGEX_NS}/Object",
             visualizer_cfg=cube_marker_cfg,
-            debug_vis=True,  # disable visualization
+            debug_vis=False,  # disable visualization
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
                     prim_path="{ENV_REGEX_NS}/Object",
