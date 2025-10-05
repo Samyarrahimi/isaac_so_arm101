@@ -10,3 +10,4 @@
 
 from .so_arm100 import *
 from .so_arm100_roscon import *
+from .so_arm100_camera import *
