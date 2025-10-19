@@ -61,6 +61,7 @@ def object_grasped(
     )
     return grasped
 
+
 def object_is_grasped(
     env: ManagerBasedRLEnv,
     grip_threshold: float = 0.2,
@@ -92,8 +93,8 @@ def object_is_grasped(
 
 
 def set_object_position(
-        env,
-        env_ids: torch.Tensor | list[int],
+        env: ManagerBasedRLEnv,
+        env_ids: torch.Tensor,
         robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
         object_cfg: SceneEntityCfg = SceneEntityCfg("object"),
         local_offset_xyz=(0.0, 0.0, 0.09),
@@ -112,19 +113,16 @@ def set_object_position(
     Returns:
         None
     """
-    # Ensure env_ids is a 1D list or tensor of ints
-    if isinstance(env_ids, torch.Tensor):
-        env_ids_list = env_ids.cpu().tolist()
-    else:
-        env_ids_list = list(env_ids)
-
+    #print("set_object_position called with env_ids:", env_ids)
     robot = env.scene[robot_cfg.name]
     obj   = env.scene[object_cfg.name]
 
     art_data = robot.data
     link_states = art_data.body_link_state_w  # shape (num_envs, num_links, 13)
 
-    for idx in env_ids_list:
+    ids = env_ids.cpu().tolist()
+
+    for idx in ids:
         # Fixed_Gripper is index -2
         pose_fixed = link_states[idx, -2]  
 
@@ -152,24 +150,68 @@ def set_object_position(
         target_pos = base_pos + world_off
 
         # Build pose (x,y,z, qw, qx, qy, qz)
-        pose_device = obj._device
         pose7 = torch.tensor([target_pos[0], target_pos[1], target_pos[2],
                                qw, qx, qy, qz],
                               dtype=torch.float32,
-                              device=pose_device).unsqueeze(0)
+                              device=env.device).unsqueeze(0)
+        zero_vel = torch.zeros((1,6), dtype=torch.float32, device=env.device)
 
-        env_id_tensor = torch.tensor([idx], dtype=torch.int32, device=pose_device)
-        zero_vel      = torch.zeros((1,6), dtype=torch.float32, device=pose_device)
+        env_ids_tensor = torch.tensor([idx], dtype=torch.int32, device=env.device)
 
-        obj.write_root_pose_to_sim(pose7, env_ids=env_id_tensor)
-        obj.write_root_velocity_to_sim(zero_vel, env_ids=env_id_tensor)
-        obj.reset(env_ids=env_id_tensor)
+        obj.write_root_pose_to_sim(pose7, env_ids=env_ids_tensor)
+        obj.write_root_velocity_to_sim(zero_vel, env_ids=env_ids_tensor)
+        obj.reset(env_ids=env_ids_tensor)
     return None
 
 
-def randomize_shoulder_rotation(
-        env,
+def randomize_robot_joint_positions(
+        env: ManagerBasedRLEnv,
         env_ids: torch.Tensor | list[int],
+        robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+        joint_noise_std: float = 0.05
+    ) -> torch.BoolTensor:
+    """
+    Randomize the robot's joint positions around their defaults *for the given env_ids*
+    within soft positional limits for each parallel environment.
+
+    Args:
+        env: ManagerBasedRLEnv instance.
+        env_ids: tensor or list of environment indices to apply the randomization to.
+        robot_cfg: SceneEntityCfg for the robot asset.
+        joint_noise_std: standard deviation of the noise to apply to the default joint positions.
+
+    Returns:
+        success_mask: torch.BoolTensor of shape (num_envs,) with True for envs that were
+                      randomized.
+    """
+    #print("randomize_robot_joint_positions called with env_ids:", env_ids)
+
+    robot = env.scene[robot_cfg.name]
+    data = robot.data
+
+    # Get the default joint positions/velocities for only those env_ids
+    default_q = data.default_joint_pos[env_ids].clone()    # shape = (len(env_ids), num_joints)
+    default_vel = data.default_joint_vel[env_ids].clone()  # same shape
+
+    # Sample noise, apply, and clamp to limits (also only for those env_ids)
+    noise = torch.randn_like(default_q) * joint_noise_std
+    perturbed_q = default_q + noise
+
+    limits = data.joint_pos_limits[env_ids]  # shape (len(env_ids), num_joints, 2)
+    lower = limits[..., 0]
+    upper = limits[..., 1]
+    perturbed_q = torch.max(torch.min(perturbed_q, upper), lower)
+
+    robot.write_joint_state_to_sim(perturbed_q, default_vel, env_ids=env_ids)
+    robot.reset(env_ids=env_ids)
+
+    success = torch.ones(len(env_ids), dtype=torch.bool, device=env.device)
+    return success
+
+
+def randomize_shoulder_rotation(
+        env: ManagerBasedRLEnv,
+        env_ids: torch.Tensor,
         robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
         min_angle: float = -1.56,
         max_angle: float =  1.56
@@ -181,20 +223,18 @@ def randomize_shoulder_rotation(
     Returns:
         None
     """
-    robot = env.scene[robot_cfg.name]
-    num_envs = env.num_envs
-    # Get the current default joint positions
-    default_joint_pos = robot.data.default_joint_pos.clone()
-    default_joint_vel = robot.data.default_joint_vel.clone()
+    #print("randomize_shoulder_rotation called with env_ids:", env_ids)
 
-    # Make env_ids list
-    if isinstance(env_ids, torch.Tensor):
-        ids = env_ids.cpu().tolist()
-    else:
-        ids = list(env_ids)
+    robot = env.scene[robot_cfg.name]
+    # Get the current default joint positions
+    default_joint_pos = robot.data.default_joint_pos[env_ids].clone()
+    default_joint_vel = robot.data.default_joint_vel[env_ids].clone()
+
+    ids = env_ids.cpu().tolist()
+    num_ids = len(ids)
 
     # Loop through each env id and assign random value
-    for idx in ids:
+    for idx in range(num_ids):
         angle = random.uniform(min_angle, max_angle)
         # find index of “Shoulder_Rotation”
         joint_names = robot.data.joint_names
@@ -202,9 +242,7 @@ def randomize_shoulder_rotation(
         default_joint_pos[idx, j_idx] = angle
 
     # Write the state for all envs
-    robot.write_joint_state_to_sim(default_joint_pos, default_joint_vel)
+    robot.write_joint_state_to_sim(default_joint_pos, default_joint_vel, env_ids=env_ids)
     # Reset those envs
-    robot.reset(env_ids=torch.tensor(ids, dtype=torch.int32, device=env.device))
-
-    # Return success flags
-    return torch.ones((num_envs,), dtype=torch.bool, device=env.device)
+    robot.reset(env_ids=env_ids)
+    return torch.ones((len(ids),), dtype=torch.bool, device=env.device)
