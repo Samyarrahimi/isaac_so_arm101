@@ -152,15 +152,35 @@ class ObservationsCfg:
 class EventCfg:
     """Configuration for events."""
 
-    reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
+    #reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
+    # reset_object_position = EventTerm(
+    #     func=mdp.reset_root_state_uniform,
+    #     mode="reset",
+    #     params={
+    #         "pose_range": {"x": (-0.1, 0.1), "y": (-0.2, 0.2), "z": (0.0, 0.0)},
+    #         "velocity_range": {},
+    #         "asset_cfg": SceneEntityCfg("object", body_names="Object"),
+    #     },
+    # )
 
-    reset_object_position = EventTerm(
-        func=mdp.reset_root_state_uniform,
+    random_shoulder_rotation = EventTerm(
+        func=my_mdp.randomize_shoulder_rotation,
         mode="reset",
         params={
-            "pose_range": {"x": (-0.1, 0.1), "y": (-0.2, 0.2), "z": (0.0, 0.0)},
-            "velocity_range": {},
-            "asset_cfg": SceneEntityCfg("object", body_names="Object"),
+            "robot_cfg": SceneEntityCfg("robot"),
+            "min_angle": -1.56,
+            "max_angle":  1.56,
+        },
+    )
+
+    reset_object_position = EventTerm(
+        func=my_mdp.set_object_position,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "object_cfg": SceneEntityCfg("object"),
+            "local_offset_xyz": (0.0, 0.0, 0.09),
+            "extra_z_lower": 0.0,
         },
     )
 
@@ -205,7 +225,7 @@ class TerminationsCfg:
         func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
     )
 
-    object_grasped = DoneTerm(func=my_mdp.object_grasped)
+    #object_grasped = DoneTerm(func=my_mdp.object_grasped)
 
 
 @configclass
