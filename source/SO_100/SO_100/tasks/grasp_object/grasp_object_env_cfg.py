@@ -101,10 +101,10 @@ class CommandsCfg:
     """Command terms for the MDP."""
 
     object_pose = mdp.UniformPoseCommandCfg(
-        asset_name="object",
+        asset_name="robot",
         body_name=MISSING,  # will be set by agent env cfg
         resampling_time_range=(5.0, 5.0),
-        debug_vis=False,
+        debug_vis=True,
         ranges=mdp.UniformPoseCommandCfg.Ranges(
             pos_x=(-0.1, 0.1),
             pos_y=(-0.3, -0.1),
@@ -163,6 +163,15 @@ class EventCfg:
     #     },
     # )
 
+    randomize_joints = EventTerm(
+        func=my_mdp.randomize_robot_joint_positions,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "joint_noise_std": 0.05,
+        },
+    )
+
     random_shoulder_rotation = EventTerm(
         func=my_mdp.randomize_shoulder_rotation,
         mode="reset",
@@ -192,7 +201,10 @@ class RewardsCfg:
 
     reaching_object = RewTerm(func=mdp.object_ee_distance, params={"std": 0.05}, weight=1.0)
 
-    grasp_object = RewTerm(func=my_mdp.object_grasped, weight=20.0)
+    grasp_object = RewTerm(func=my_mdp.check_grasped, weight=20.0)
+
+    #grasp_object = RewTerm(func=my_mdp.object_grasped, weight=20.0)
+
 
     object_goal_tracking = RewTerm(
         func=mdp.object_goal_distance,
@@ -221,9 +233,9 @@ class TerminationsCfg:
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
 
-    object_dropping = DoneTerm(
-        func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
-    )
+    # object_dropping = DoneTerm(
+    #     func=mdp.root_height_below_minimum, params={"minimum_height": -0.08, "asset_cfg": SceneEntityCfg("object")}
+    # )
 
     #object_grasped = DoneTerm(func=my_mdp.object_grasped)
 

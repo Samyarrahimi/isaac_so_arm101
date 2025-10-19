@@ -32,11 +32,6 @@ from SO_100.tasks.grasp_object.grasp_object_env_cfg import GraspObjectEnvCfg
 # Scene definition
 ##
 
-# ----------------------------------------------------------------
-# --------------- LycheeAI live asset ----------------------------
-# ----------------------------------------------------------------
-
-
 @configclass
 class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
     def __post_init__(self):
@@ -45,8 +40,6 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
 
         # switch robot to franka
         self.scene.robot = SO_ARM100_CAMERA_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
-
-        # TODO: reorient command target
 
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
@@ -63,7 +56,7 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
         )
 
         # Set the body name for the end effector
-        self.commands.object_pose.body_name = ["Object"]
+        self.commands.object_pose.body_name = ["Fixed_Gripper"]
 
         self.scene.object = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/Object",
