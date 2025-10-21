@@ -16,12 +16,8 @@ os.environ["HYDRA_FULL_ERROR"] = "1"
 
 # from . import mdp
 import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
-from isaaclab.assets import (
-    ArticulationCfg,
-    AssetBaseCfg,
-    DeformableObjectCfg,
-    RigidObjectCfg,
-)
+from SO_100.tasks.move_object import mdp as my_mdp
+from isaaclab.assets import ArticulationCfg, AssetBaseCfg, DeformableObjectCfg, RigidObjectCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.managers import CurriculumTermCfg as CurrTerm
 from isaaclab.managers import EventTermCfg as EventTerm
@@ -32,16 +28,12 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransformerCfg
+from isaaclab.sensors.contact_sensor.contact_sensor_cfg import ContactSensorCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg, UsdFileCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
-
-# from isaaclab.utils.offset import OffsetCfg
-# from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
-# from isaaclab.utils.visualizer import FRAME_MARKER_CFG
-# from isaaclab.utils.assets import RigidBodyPropertiesCfg
-
+from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 ##
 # Scene definition
@@ -49,37 +41,31 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 
 
 @configclass
-class ObjectTableSceneCfg(InteractiveSceneCfg):
-    """Configuration for the lift scene with a robot and a object.
+class MoveObjectTableSceneCfg(InteractiveSceneCfg):
+    """Configuration for the move scene with a robot and a object.
     This is the abstract base implementation, the exact scene is defined in the derived classes
     which need to set the target object, robot and end-effector frames
     """
 
-    # robots: will be populated by agent env cfg
-    robot: ArticulationCfg = MISSING
-    # end-effector sensor: will be populated by agent env cfg
-    ee_frame: FrameTransformerCfg = MISSING
-    # target object: will be populated by agent env cfg
-    object: RigidObjectCfg | DeformableObjectCfg = MISSING
+    # world
+    ground = AssetBaseCfg(
+        prim_path="/World/ground",
+        spawn=sim_utils.GroundPlaneCfg(),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
+    )
 
-    # Table
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
-        init_state=AssetBaseCfg.InitialStateCfg(pos=[0.5, 0, 0], rot=[0.707, 0, 0, 0.707]),
-        spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Mounts/SeattleLabTable/table_instanceable.usd"),
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Mounts/SeattleLabTable/table_instanceable.usd",
+        ),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.55, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
     )
-
-    # plane
-    plane = AssetBaseCfg(
-        prim_path="/World/GroundPlane",
-        init_state=AssetBaseCfg.InitialStateCfg(pos=[0, 0, -1.05]),
-        spawn=GroundPlaneCfg(),
-    )
-
+    
     # lights
     light = AssetBaseCfg(
         prim_path="/World/light",
-        spawn=sim_utils.DomeLightCfg(color=(0.75, 0.75, 0.75), intensity=3000.0),
+        spawn=sim_utils.DomeLightCfg(color=(0.75, 0.75, 0.75), intensity=2500.0),
     )
 
     # context camera
@@ -91,6 +77,20 @@ class ObjectTableSceneCfg(InteractiveSceneCfg):
             scale=(1.0, 1.0, 1.0)
         ),
     )
+
+    # robots: will be populated by agent env cfg
+    robot: ArticulationCfg = MISSING
+
+    # target object: will be populated by agent env cfg
+    object: RigidObjectCfg | DeformableObjectCfg = MISSING
+
+    # end-effector sensor: will be populated by agent env cfg
+    ee_frame: FrameTransformerCfg = MISSING
+    cube_marker: FrameTransformerCfg = MISSING
+    
+    # contact sensor
+    contact_sensor_moving: ContactSensorCfg = MISSING
+    contact_sensor_fixed: ContactSensorCfg = MISSING
 
 
 ##
@@ -135,11 +135,12 @@ class ObservationsCfg:
     class PolicyCfg(ObsGroup):
         """Observations for policy group."""
 
-        joint_pos = ObsTerm(func=mdp.joint_pos_rel)
-        joint_vel = ObsTerm(func=mdp.joint_vel_rel)
+        # observation terms (order preserved)
+        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
+        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
         object_position = ObsTerm(func=mdp.object_position_in_robot_root_frame)
         target_object_position = ObsTerm(func=mdp.generated_commands, params={"command_name": "object_pose"})
-        actions = ObsTerm(func=mdp.last_action)
+        actions = ObsTerm(func=mdp.last_action) 
 
         def __post_init__(self):
             self.enable_corruption = True
@@ -226,11 +227,11 @@ class CurriculumCfg:
 
 
 @configclass
-class LiftEnvCfg(ManagerBasedRLEnvCfg):
-    """Configuration for the lifting environment."""
+class MoveEnvCfg(ManagerBasedRLEnvCfg):
+    """Configuration for the Moving environment."""
 
     # Scene settings
-    scene: ObjectTableSceneCfg = ObjectTableSceneCfg(num_envs=4096, env_spacing=2.5)
+    scene: MoveObjectTableSceneCfg = MoveObjectTableSceneCfg(num_envs=4096, env_spacing=2.5)
     # Basic settings
     observations: ObservationsCfg = ObservationsCfg()
     actions: ActionsCfg = ActionsCfg()
@@ -248,9 +249,10 @@ class LiftEnvCfg(ManagerBasedRLEnvCfg):
         self.episode_length_s = 5.0
         self.viewer.eye = (2.5, 2.5, 1.5)
         # simulation settings
-        self.sim.dt = 0.01  # 100Hz
+        self.sim.dt = 1.0 / 100.0
         self.sim.render_interval = self.decimation
 
+        # TODO do we need all these physx settings?
         self.sim.physx.bounce_threshold_velocity = 0.2
         self.sim.physx.bounce_threshold_velocity = 0.01
         self.sim.physx.gpu_found_lost_aggregate_pairs_capacity = 1024 * 1024 * 4

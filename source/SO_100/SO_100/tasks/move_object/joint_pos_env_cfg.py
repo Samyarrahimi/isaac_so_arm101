@@ -10,28 +10,22 @@
 
 import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
 from isaaclab.assets import RigidObjectCfg
-
-# from isaaclab.managers NotImplementedError
-from isaaclab.sensors.frame_transformer.frame_transformer_cfg import (
-    FrameTransformerCfg,
-    OffsetCfg,
-)
+from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransformerCfg, OffsetCfg
+from isaaclab.sensors.contact_sensor.contact_sensor_cfg import ContactSensorCfg
 from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
+from isaaclab.markers.config import FRAME_MARKER_CFG
+
+
 from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG, SO_ARM100_CAMERA_CFG  # noqa: F401
-from SO_100.tasks.lift.lift_env_cfg import LiftEnvCfg
+from source.SO_100.SO_100.tasks.move_object.move_env_cfg import MoveEnvCfg
 
-from isaaclab.markers.config import FRAME_MARKER_CFG  # isort: skip
-
-# ----------------------------------------------------------------
-# --------------- LycheeAI live asset ----------------------------
-# ----------------------------------------------------------------
 
 
 @configclass
-class SoArm100LiftCubeEnvCfg(LiftEnvCfg):
+class SoArm100MoveCubeEnvCfg(MoveEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -73,13 +67,23 @@ class SoArm100LiftCubeEnvCfg(LiftEnvCfg):
             ),
         )
 
+        self.scene.contact_sensor_moving = ContactSensorCfg(
+            prim_path="{ENV_REGEX_NS}/Robot/Moving_Jaw", 
+            filter_prim_paths_expr=["{ENV_REGEX_NS}/Object"],
+        )
+
+        self.scene.contact_sensor_fixed = ContactSensorCfg(
+            prim_path="{ENV_REGEX_NS}/Robot/Fixed_Gripper", 
+            filter_prim_paths_expr=["{ENV_REGEX_NS}/Object"],
+        )
+
         # Listens to the required transforms
         marker_cfg = FRAME_MARKER_CFG.copy()
         marker_cfg.markers["frame"].scale = (0.05, 0.05, 0.05)
         marker_cfg.prim_path = "/Visuals/FrameTransformer"
         self.scene.ee_frame = FrameTransformerCfg(
             prim_path="{ENV_REGEX_NS}/Robot/Base",
-            debug_vis=False,
+            debug_vis=True,
             visualizer_cfg=marker_cfg,
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
@@ -92,9 +96,27 @@ class SoArm100LiftCubeEnvCfg(LiftEnvCfg):
             ],
         )
 
+        cube_marker_cfg = FRAME_MARKER_CFG.copy()
+        cube_marker_cfg.markers["frame"].scale = (0.05, 0.05, 0.05)
+        cube_marker_cfg.prim_path = "/Visuals/CubeFrameMarker"
+        self.scene.cube_marker = FrameTransformerCfg(
+            prim_path="{ENV_REGEX_NS}/Object",
+            visualizer_cfg=cube_marker_cfg,
+            debug_vis=True,  # disable visualization
+            target_frames=[
+                FrameTransformerCfg.FrameCfg(
+                    prim_path="{ENV_REGEX_NS}/Object",
+                    name="cube",
+                    offset=OffsetCfg(
+                        pos=(0.0, 0.0, 0.0),
+                    ),
+                ),
+            ],
+        )
+
 
 @configclass
-class SoArm100LiftCubeEnvCfg_PLAY(SoArm100LiftCubeEnvCfg):
+class SoArm100MoveCubeEnvCfg_PLAY(SoArm100MoveCubeEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()

@@ -16,23 +16,23 @@ from . import agents
 # Register Gym environments.
 ##
 
-# Register the SO-100 Cube Lift environment
+# Register the SO-100 Cube Move environment
 gym.register(
-    id="SO-ARM100-Lift-Cube-v0",
+    id="SO-ARM100-Move-Cube-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubeEnvCfg",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100MoveCubeEnvCfg",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:MoveCubePPORunnerCfg",
     },
     disable_env_checker=True,
 )
 
 gym.register(
-    id="SO-ARM100-Lift-Cube-Play-v0",
+    id="SO-ARM100-Move-Cube-Play-v0",
     entry_point="isaaclab.envs:ManagerBasedRLEnv",
     kwargs={
-        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100LiftCubeEnvCfg_PLAY",
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:LiftCubePPORunnerCfg",
+        "env_cfg_entry_point": f"{__name__}.joint_pos_env_cfg:SoArm100MoveCubeEnvCfg_PLAY",
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:MoveCubePPORunnerCfg",
     },
     disable_env_checker=True,
 )
