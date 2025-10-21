@@ -25,7 +25,7 @@ from source.SO_100.SO_100.tasks.move_object.move_env_cfg import MoveEnvCfg
 
 
 @configclass
-class SoArm100MoveCubeEnvCfg(MoveEnvCfg):
+class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()
@@ -116,7 +116,7 @@ class SoArm100MoveCubeEnvCfg(MoveEnvCfg):
 
 
 @configclass
-class SoArm100MoveCubeEnvCfg_PLAY(SoArm100MoveCubeEnvCfg):
+class SoArm100MoveObjectEnvCfg_PLAY(SoArm100MoveObjectEnvCfg):
     def __post_init__(self):
         # post init of parent
         super().__post_init__()

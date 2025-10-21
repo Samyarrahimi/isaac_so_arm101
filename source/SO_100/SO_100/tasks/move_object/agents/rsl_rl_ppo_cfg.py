@@ -17,7 +17,7 @@ from isaaclab_rl.rsl_rl import (
 
 
 @configclass
-class MoveCubePPORunnerCfg(RslRlOnPolicyRunnerCfg):
+class MoveObjectPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 1500
     save_interval = 50
