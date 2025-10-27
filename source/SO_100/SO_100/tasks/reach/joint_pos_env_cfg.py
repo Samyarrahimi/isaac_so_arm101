@@ -17,16 +17,12 @@
 # import mdp
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.utils import configclass
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG  # noqa: F401
+from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG, SO_ARM100_CAMERA_CFG  # noqa: F401
 from SO_100.tasks.reach.reach_env_cfg import ReachEnvCfg
 
 ##
 # Scene definition
 ##
-
-# ----------------------------------------------------------------
-# --------------- LycheeAI live asset ----------------------------
-# ----------------------------------------------------------------
 
 
 @configclass
@@ -36,7 +32,7 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
         super().__post_init__()
 
         # switch robot to franka
-        self.scene.robot = SO_ARM100_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        self.scene.robot = SO_ARM100_CAMERA_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
         # override rewards
         self.rewards.end_effector_position_tracking.params["asset_cfg"].body_names = ["Fixed_Gripper"]
         self.rewards.end_effector_position_tracking_fine_grained.params["asset_cfg"].body_names = ["Fixed_Gripper"]
