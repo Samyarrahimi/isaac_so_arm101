@@ -72,17 +72,43 @@ def object_goal_distance(
     return (object.data.root_pos_w[:, 2] > minimal_height) * (1 - torch.tanh(distance / std))
 
 
-def object_ee_distance_and_lifted(
+def check_grasped(
     env: ManagerBasedRLEnv,
-    std: float,
-    minimal_height: float,
-    object_cfg: SceneEntityCfg = SceneEntityCfg("object"),
-    ee_frame_cfg: SceneEntityCfg = SceneEntityCfg("ee_frame"),
-) -> torch.Tensor:
-    """Combined reward for reaching the object AND lifting it."""
-    # Get reaching reward
-    reach_reward = object_ee_distance(env, std, object_cfg, ee_frame_cfg)
-    # Get lifting reward
-    lift_reward = object_is_lifted(env, minimal_height, object_cfg)
-    # Combine rewards multiplicatively
-    return reach_reward * lift_reward
+    contact_sensor_cfg: SceneEntityCfg = SceneEntityCfg("contact_sensor_moving"),
+    force_threshold: float = 1.0
+) -> torch.BoolTensor:
+    """
+    Returns a boolean tensor of shape [num_envs] indicating for each environment
+    whether the object has been grasped. Uses a ContactSensor and checks if 
+    the magnitude of forces in force_matrix_w exceeds `force_threshold`.
+    
+    Parameters
+    ----------
+    env : ManagerBasedRLEnv
+        The RL environment instance.
+    env_ids : torch.Tensor
+        tensor of environment indices (shape [num_envs], dtype=torch.int32/int64).
+    contact_sensor_cfg : SceneEntityCfg
+        Configuration specifying which contact sensor to use.
+    force_threshold : float
+        Threshold on contact-force magnitude to declare a "grasp".
+    """
+    sensor = env.scene[contact_sensor_cfg.name]
+    # force_matrix_w has shape (N_sensors, B, M, 3)
+    f_mat_full = sensor.data.force_matrix_w  # torch.Tensor
+    
+    # We assume one contact sensor per env (N_sensors == num_envs) OR
+    # else some mapping. Here we assume f_mat_full[env_index]
+    # For simplicity, assume N_sensors == num_envs and sensors aligned with envs.
+    
+    # Now we collapse B and M dims: e.g., sum or max over them
+    # Option: sum over B and M
+    f_sum = f_mat_full.sum(dim=(1, 2))  # shape (num_envs, 3)
+    
+    # Compute magnitude:
+    f_mag = torch.linalg.norm(f_sum, dim=-1)  # shape (num_envs,)
+    
+    # boolean mask
+    grasped_mask = f_mag > force_threshold  # shape (num_envs,)
+    return grasped_mask.to(env.device)
+

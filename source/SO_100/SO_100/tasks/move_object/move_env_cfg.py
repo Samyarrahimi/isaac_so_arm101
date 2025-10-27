@@ -165,16 +165,43 @@ class EventCfg:
     #         "asset_cfg": SceneEntityCfg("object", body_names="Object"),
     #     },
     # )
+    randomize_joints = EventTerm(
+        func=my_mdp.randomize_robot_joint_positions,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "joint_noise_std": 0.05,
+        },
+    )
 
-    initialize_grasped = EventTerm(
-        func = my_mdp.initialize_grasped_start,
+    random_shoulder_rotation = EventTerm(
+        func=my_mdp.randomize_shoulder_rotation,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "min_angle": -1.56,
+            "max_angle":  1.56,
+        },
+    )
+
+    reset_object_position = EventTerm(
+        func=my_mdp.set_object_position,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "object_cfg": SceneEntityCfg("object"),
+            "local_offset_xyz": (0.0, 0.0, 0.09),
+            "extra_z_lower": 0.0,
+        },
+    )
+
+    gripper_grasp_object = EventTerm(
+        func = my_mdp.grasp_object,
         mode = "reset",
         params = {
             "robot_cfg": SceneEntityCfg("robot"),
             "object_cfg": SceneEntityCfg("object"),
-            "gripper_closed_value": 0.0,
-            "object_offset_local": (0.0, 0.0, -0.02),
-            "start_ee_height": 0.10
+            "gripper_closed_value": 0.2
         },
     )
 
@@ -185,7 +212,7 @@ class RewardsCfg:
 
     reaching_object = RewTerm(func=mdp.object_ee_distance, params={"std": 0.05}, weight=1.0)
 
-    lifting_object = RewTerm(func=mdp.object_is_lifted, params={"minimal_height": 0.04}, weight=15.0)
+    grasp_object = RewTerm(func=my_mdp.check_grasped, weight=20.0)
 
     object_goal_tracking = RewTerm(
         func=mdp.object_goal_distance,
@@ -215,9 +242,7 @@ class TerminationsCfg:
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
 
-    object_dropping = DoneTerm(
-        func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
-    )
+    object_released = DoneTerm(func=my_mdp.check_released, params={"force_threshold": 30.0})
 
 
 @configclass

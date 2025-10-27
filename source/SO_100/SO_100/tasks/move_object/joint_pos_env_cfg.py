@@ -20,7 +20,7 @@ from isaaclab.markers.config import FRAME_MARKER_CFG
 
 
 from SO_100.robots import SO_ARM100_CFG, SO_ARM100_ROSCON_CFG, SO_ARM100_CAMERA_CFG  # noqa: F401
-from source.SO_100.SO_100.tasks.move_object.move_env_cfg import MoveEnvCfg
+from SO_100.tasks.move_object.move_env_cfg import MoveEnvCfg
 
 
 
@@ -83,7 +83,7 @@ class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
         marker_cfg.prim_path = "/Visuals/FrameTransformer"
         self.scene.ee_frame = FrameTransformerCfg(
             prim_path="{ENV_REGEX_NS}/Robot/Base",
-            debug_vis=True,
+            debug_vis=False,
             visualizer_cfg=marker_cfg,
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
@@ -102,7 +102,7 @@ class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
         self.scene.cube_marker = FrameTransformerCfg(
             prim_path="{ENV_REGEX_NS}/Object",
             visualizer_cfg=cube_marker_cfg,
-            debug_vis=True,  # disable visualization
+            debug_vis=False,  # disable visualization
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
                     prim_path="{ENV_REGEX_NS}/Object",
