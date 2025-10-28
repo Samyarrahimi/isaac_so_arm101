@@ -110,10 +110,10 @@ class CommandsCfg:
         ranges=mdp.UniformPoseCommandCfg.Ranges(
             pos_x=(-0.1, 0.1),
             pos_y=(-0.3, -0.1),
-            pos_z=(0.2, 0.35),
-            roll=(0.0, 0.0),
-            pitch=(0.0, 0.0),
-            yaw=(0.0, 0.0),
+            pos_z=(0.1, 0.35),
+            roll=(0.0, 3.14), # x axis
+            pitch=(3.14, 3.14), # y axis 180 degree
+            yaw=(0.0, 0.0), # z axis
         ),
     )
 
@@ -184,6 +184,16 @@ class EventCfg:
         },
     )
 
+    random_shoulder_pitch = EventTerm(
+        func=my_mdp.randomize_shoulder_pitch,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "min_angle": -1.56,
+            "max_angle":  1.0,
+        },
+    )
+
     reset_object_position = EventTerm(
         func=my_mdp.set_object_position,
         mode="reset",
@@ -204,7 +214,6 @@ class EventCfg:
             "gripper_closed_value": 0.2
         },
     )
-
 
 @configclass
 class RewardsCfg:

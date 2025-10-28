@@ -310,3 +310,41 @@ def check_released(
     # boolean mask
     grasped_mask = f_mag > force_threshold  # shape (num_envs,)
     return ~grasped_mask.to(env.device)
+
+def randomize_shoulder_pitch(
+        env: ManagerBasedRLEnv,
+        env_ids: torch.Tensor,
+        robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+        min_angle: float = -1.56,
+        max_angle: float =  1.56
+    ) -> None:
+    """
+    Randomise the Shoulder_Rotation joint for each environment in env_ids with a
+    different value in [min_angle, max_angle].
+
+    Returns:
+        None
+    """
+    #print("randomize_shoulder_rotation called with env_ids:", env_ids)
+
+    robot = env.scene[robot_cfg.name]
+    # Get the current default joint positions
+    current_joint_pos = robot.data.joint_pos[env_ids].clone()
+    current_joint_vel = robot.data.joint_vel[env_ids].clone()
+
+    ids = env_ids.cpu().tolist()
+    num_ids = len(ids)
+
+    # Loop through each env id and assign random value
+    for idx in range(num_ids):
+        angle = random.uniform(min_angle, max_angle)
+        # find index of “Shoulder_Rotation”
+        joint_names = robot.data.joint_names
+        j_idx = joint_names.index("Shoulder_Pitch")
+        current_joint_pos[idx, j_idx] = angle
+
+    # Write the state for all envs
+    robot.write_joint_state_to_sim(current_joint_pos, current_joint_vel, env_ids=env_ids)
+    # Reset those envs
+    robot.reset(env_ids=env_ids)
+    return torch.ones((len(ids),), dtype=torch.bool, device=env.device)
