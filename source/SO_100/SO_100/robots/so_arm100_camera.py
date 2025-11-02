@@ -46,11 +46,11 @@ SO_ARM100_CAMERA_CFG = ArticulationCfg(
         rot=(0.7071068, 0.0, 0.0, 0.7071068),  # Quaternion for 90 degrees rotation around Y-axis
         joint_pos={
             "Shoulder_Rotation": 0.0,
-            "Shoulder_Pitch": -1.309,
-            "Elbow": 1.56,
-            "Wrist_Pitch": -0.872,
+            "Shoulder_Pitch": 0.0,
+            "Elbow": 0.0,
+            "Wrist_Pitch": 0.0,
             "Wrist_Roll": 0.0,
-            "Gripper": 0.69,  # Middle position to make movement more apparent
+            "Gripper": 0.027, # [0.026, 0.698]
         },
         # Set initial joint velocities to zero
         joint_vel={".*": 0.0},
