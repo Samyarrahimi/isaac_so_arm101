@@ -25,6 +25,9 @@ from SO_100.tasks.open_gripper.open_gripper_env_cfg import OpenGripperEnvCfg
 ##
 
 
+# damping and stiffness values must be set to 0 for all joints other than Gripper
+# otherwise, the joints change position during training eventhough no action is applied
+# Gripper action is contnious and not Binary anymore
 @configclass
 class SoArm100OpenGripperEnvCfg(OpenGripperEnvCfg):
     def __post_init__(self):
@@ -41,11 +44,18 @@ class SoArm100OpenGripperEnvCfg(OpenGripperEnvCfg):
         #     scale=0.5,
         #     use_default_offset=True,
         # )
-        self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
+        # self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
+        #     asset_name="robot",
+        #     joint_names=["Gripper"],
+        #     open_command_expr={"Gripper": 0.5},
+        #     close_command_expr={"Gripper": 0.0},
+        # )
+        self.actions.gripper_action = mdp.JointPositionActionCfg(
             asset_name="robot",
             joint_names=["Gripper"],
-            open_command_expr={"Gripper": 0.5},
-            close_command_expr={"Gripper": 0.0},
+            scale=0.5,
+            use_default_offset=True,
+            clip={"Gripper": (0.026, 0.698)},  # gripper joint limits
         )
 
 

@@ -88,11 +88,11 @@ def object_ee_distance_and_lifted(
     # Combine rewards multiplicatively
     return reach_reward * lift_reward
 
+
 def reward_gripper_open(
     env: ManagerBasedRLEnv,
     robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
-    gripper_joint_name: str = "Gripper",
-    open_value: float = 0.499
+    open_value: float = 0.5
 ) -> torch.Tensor:
     """
     Returns reward = 1.0 for each env where the gripper joint position ≥ open_value,
@@ -100,27 +100,38 @@ def reward_gripper_open(
     """
     robot: Articulation = env.scene[robot_cfg.name]
     gripper_joint_pos = robot.data.joint_pos[:, -1] # last joint is gripper
-    return gripper_joint_pos#(gripper_joint_pos >= open_value).to(env.device).float()
+    #print("Gripper joint positions:", gripper_joint_pos)
+    return (gripper_joint_pos >= open_value).to(env.device).float()
 
 
-def joint_pos_rel_except_Gripper(
-    env: ManagerBasedRLEnv,
-    robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
-    weight: float = 0.1
-) -> torch.Tensor:
-    """
-    Returns a tensor of shape (num_envs,) penalizing motion of all joints except the gripper.
-    """
-    robot = env.scene[robot_cfg.name]
-    dev = torch.abs(robot.data.joint_pos[:, :-1] - robot.data.default_joint_pos[:, :-1])
-    return dev.sum(dim=1)
+# _prev_joint_pos = None
+# _prev_joint_vel = None
+
+# def joint_pos_rel_except_Gripper(
+#     env: ManagerBasedRLEnv,
+#     robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+#     weight: float = 0.1
+# ) -> torch.Tensor:
+#     """
+#     Returns a tensor of shape (num_envs,) penalizing motion of all joints except the gripper.
+#     """
+#     robot = env.scene[robot_cfg.name]
+#     # global _prev_joint_pos
+#     # if _prev_joint_pos is None:
+#     #     _prev_joint_pos = robot.data.joint_pos[:, :].clone()
+#     dev = torch.abs(robot.data.joint_pos[:, :-1] - robot.data.default_joint_pos[:,:-1]) #_prev_joint_pos[:, :-1])
+#     #_prev_joint_pos = robot.data.joint_pos[:, :].clone()
+#     return dev.sum(dim=1)
 
 
-def joint_vel_rel_except_Gripper(
-    env: ManagerBasedRLEnv,
-    robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
-    weight: float = 0.05
-) -> torch.Tensor:
-    robot = env.scene[robot_cfg.name]
-    vel_dev = torch.abs(robot.data.joint_vel[:, :-1] - robot.data.default_joint_vel[:, :-1])
-    return vel_dev.sum(dim=1)
+# def joint_vel_rel_except_Gripper(
+#     env: ManagerBasedRLEnv,
+#     robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+# ) -> torch.Tensor:
+#     robot = env.scene[robot_cfg.name]
+#     # global _prev_joint_vel
+#     # if _prev_joint_vel is None:
+#     #     _prev_joint_vel = robot.data.joint_vel[:, :].clone()
+#     vel_dev = torch.abs(robot.data.joint_vel[:, :-1] - robot.data.default_joint_vel[:,:-1]) #_prev_joint_vel[:, :-1])
+#     #_prev_joint_vel = robot.data.joint_vel[:, :].clone()
+#     return vel_dev.sum(dim=1)

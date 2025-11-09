@@ -102,42 +102,15 @@ class ObservationsCfg:
 @configclass
 class EventCfg:
     """Configuration for events."""
+    reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
 
-    randomize_joints = EventTerm(
-        func=my_mdp.randomize_robot_joint_positions,
-        mode="reset",
-        params={
-            "robot_cfg": SceneEntityCfg("robot"),
-            "joint_noise_std": 0.5,
-        },
-    )
-
-    reset_robot_joints = EventTerm(
-        func=mdp.reset_joints_by_scale,
-        mode="reset",
-        params={
-            "position_range": (0.5, 1.5),
-            "velocity_range": (0.0, 0.0),
-        },
-    )
+    reset_gripper_position = EventTerm(func=my_mdp.randomize_gripper_position, mode="reset")
 
 
 @configclass
 class RewardsCfg:
     """Reward terms for the MDP."""
-    opens_gripper = RewTerm(func=my_mdp.reward_gripper_open, weight=10.0)
-
-    # other_joints_pos_rel = RewTerm(
-    #     func=my_mdp.joint_pos_rel_except_Gripper,
-    #     weight=-10,
-    #     params={"robot_cfg": SceneEntityCfg("robot")},
-    # )
-
-    # other_joints_vel_rel = RewTerm(
-    #     func=my_mdp.joint_vel_rel_except_Gripper,
-    #     weight=-10,
-    #     params={"robot_cfg": SceneEntityCfg("robot")},
-    # )
+    opens_gripper = RewTerm(func=my_mdp.reward_gripper_open, weight=10.0, params={"open_value": 0.45})
 
     # action penalty
     action_rate = RewTerm(func=mdp.action_rate_l2, weight=-0.0001)
@@ -194,7 +167,7 @@ class OpenGripperEnvCfg(ManagerBasedRLEnvCfg):
         # general settings
         self.decimation = 2
         self.sim.render_interval = self.decimation
-        self.episode_length_s = 12.0
+        self.episode_length_s = 5.0
         self.viewer.eye = (2.5, 2.5, 1.5)
         # simulation settings
         self.sim.dt = 1.0 / 60.0

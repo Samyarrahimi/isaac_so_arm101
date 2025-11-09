@@ -46,11 +46,11 @@ SO_ARM100_CAMERA_CFG = ArticulationCfg(
         rot=(0.7071068, 0.0, 0.0, 0.7071068),  # Quaternion for 90 degrees rotation around Y-axis
         joint_pos={
             "Shoulder_Rotation": 0.0,
-            "Shoulder_Pitch": 0.0,
-            "Elbow": 0.0,
-            "Wrist_Pitch": 0.0,
+            "Shoulder_Pitch": -1.309,
+            "Elbow": 1.56,
+            "Wrist_Pitch": -0.872,
             "Wrist_Roll": 0.0,
-            "Gripper": 0.027, # [0.026, 0.698]
+            "Gripper": 0.0265, # [0.026, 0.698]
         },
         # Set initial joint velocities to zero
         joint_vel={".*": 0.0},
@@ -67,18 +67,18 @@ SO_ARM100_CAMERA_CFG = ArticulationCfg(
             effort_limit_sim=1.9,
             velocity_limit_sim=1.5,
             stiffness={
-                "Shoulder_Rotation": 200.0,  # Highest - moves all mass
-                "Shoulder_Pitch": 170.0,  # Slightly less than rotation
-                "Elbow": 120.0,  # Reduced based on less mass
-                "Wrist_Pitch": 80.0,  # Reduced for less mass
-                "Wrist_Roll": 50.0,  # Low mass to move
+                "Shoulder_Rotation": 0.0,#200.0,  # Highest - moves all mass
+                "Shoulder_Pitch": 0.0,#170.0,  # Slightly less than rotation
+                "Elbow": 0.0,#120.0,  # Reduced based on less mass
+                "Wrist_Pitch": 0.0,#80.0,  # Reduced for less mass
+                "Wrist_Roll": 0.0,#50.0,  # Low mass to move
             },
             damping={
-                "Shoulder_Rotation": 80.0,
-                "Shoulder_Pitch": 65.0,
-                "Elbow": 45.0,
-                "Wrist_Pitch": 30.0,
-                "Wrist_Roll": 20.0,
+                "Shoulder_Rotation": 0.0,#80.0,
+                "Shoulder_Pitch": 0.0,#65.0,
+                "Elbow": 0.0,#45.0,
+                "Wrist_Pitch": 0.0,#30.0,
+                "Wrist_Roll": 0.0,#20.0,
             },
         ),
         "gripper": ImplicitActuatorCfg(
@@ -92,5 +92,3 @@ SO_ARM100_CAMERA_CFG = ArticulationCfg(
     soft_joint_pos_limit_factor=1.0,
 )
 """Configuration of SO-ARM robot arm."""
-
-# Removed FRANKA_PANDA_HIGH_PD_CFG as it's not applicable here.
