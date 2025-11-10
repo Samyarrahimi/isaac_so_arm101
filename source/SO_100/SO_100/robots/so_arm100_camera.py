@@ -50,7 +50,7 @@ SO_ARM100_CAMERA_CFG = ArticulationCfg(
             "Elbow": 1.56,
             "Wrist_Pitch": -0.872,
             "Wrist_Roll": 0.0,
-            "Gripper": 0.0265, # [0.026, 0.698]
+            "Gripper": 0.695, # [0.026, 0.698]
         },
         # Set initial joint velocities to zero
         joint_vel={".*": 0.0},
