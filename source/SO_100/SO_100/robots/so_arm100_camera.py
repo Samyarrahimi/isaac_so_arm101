@@ -67,18 +67,18 @@ SO_ARM100_CAMERA_CFG = ArticulationCfg(
             effort_limit_sim=1.9,
             velocity_limit_sim=1.5,
             stiffness={
-                "Shoulder_Rotation": 200.0,  # Highest - moves all mass
-                "Shoulder_Pitch": 170.0,  # Slightly less than rotation
-                "Elbow": 120.0,  # Reduced based on less mass
-                "Wrist_Pitch": 80.0,  # Reduced for less mass
-                "Wrist_Roll": 50.0,  # Low mass to move
+                "Shoulder_Rotation": 0.0,#200.0,  # Highest - moves all mass
+                "Shoulder_Pitch": 0.0,#170.0,  # Slightly less than rotation
+                "Elbow": 0.0,#120.0,  # Reduced based on less mass
+                "Wrist_Pitch": 0.0,#80.0,  # Reduced for less mass
+                "Wrist_Roll": 0.0,#50.0,  # Low mass to move
             },
             damping={
-                "Shoulder_Rotation": 80.0,
-                "Shoulder_Pitch": 65.0,
-                "Elbow": 45.0,
-                "Wrist_Pitch": 30.0,
-                "Wrist_Roll": 20.0,
+                "Shoulder_Rotation": 0.0,#80.0,
+                "Shoulder_Pitch": 0.0,#65.0,
+                "Elbow": 0.0,#45.0,
+                "Wrist_Pitch": 0.0,#30.0,
+                "Wrist_Roll": 0.0,#20.0,
             },
         ),
         "gripper": ImplicitActuatorCfg(

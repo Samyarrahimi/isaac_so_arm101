@@ -30,6 +30,7 @@ from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
+from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 ##
@@ -64,6 +65,17 @@ class OpenGripperSceneCfg(InteractiveSceneCfg):
         prim_path="/World/light",
         spawn=sim_utils.DomeLightCfg(color=(0.75, 0.75, 0.75), intensity=2500.0),
     )
+
+    # context camera
+    context_camera_mesh = AssetBaseCfg(
+        prim_path="{ENV_REGEX_NS}/Table/Context_Camera",
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(1.0, -1.0, 1.3), rot=(0.8785, -0.36, -0.07, 0.3)),
+        spawn=UsdFileCfg(
+            usd_path=f"{ISAAC_NUCLEUS_DIR}/Sensors/Sensing/SG2/H60YA/Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd",
+            scale=(1.0, 1.0, 1.0)
+        ),
+    )
+
 
 
 ##
