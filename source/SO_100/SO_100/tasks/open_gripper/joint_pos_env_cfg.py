@@ -17,7 +17,7 @@
 # import mdp
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.utils import configclass
-from robots import SO_ARM100_CAMERA_CFG
+from SO_100.tasks.open_gripper.robots import SO_ARM100_CAMERA_CFG
 from SO_100.tasks.open_gripper.open_gripper_env_cfg import OpenGripperEnvCfg
 
 ##

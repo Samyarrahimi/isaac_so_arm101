@@ -17,7 +17,7 @@
 # import mdp
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.utils import configclass
-from robots import SO_ARM100_ROSCON_CFG, SO_ARM100_CAMERA_CFG
+from SO_100.tasks.reach.robots import SO_ARM100_CAMERA_CFG, SO_ARM100_ROSCON_CFG
 from SO_100.tasks.reach.reach_env_cfg import ReachEnvCfg
 
 ##
