@@ -17,7 +17,7 @@
 # import mdp
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.utils import configclass
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_CAMERA_CFG  # noqa: F401
+from robots import SO_ARM100_CAMERA_CFG
 from SO_100.tasks.close_gripper.close_gripper_env_cfg import CloseGripperEnvCfg
 
 ##

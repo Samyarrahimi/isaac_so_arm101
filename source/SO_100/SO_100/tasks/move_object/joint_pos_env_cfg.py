@@ -19,7 +19,7 @@ from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.markers.config import FRAME_MARKER_CFG
 
 
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_CAMERA_CFG  # noqa: F401
+from robots import SO_ARM100_CAMERA_CFG
 from SO_100.tasks.move_object.move_env_cfg import MoveEnvCfg
 
 

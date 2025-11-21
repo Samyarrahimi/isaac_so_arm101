@@ -25,7 +25,7 @@ from isaaclab.sensors.contact_sensor.contact_sensor_cfg import ContactSensorCfg
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.markers.config import FRAME_MARKER_CFG
 
-from SO_100.robots import SO_ARM100_CFG, SO_ARM100_CAMERA_CFG  # noqa: F401
+from robots import SO_ARM100_CAMERA_CFG
 from SO_100.tasks.grasp_object.grasp_object_env_cfg import GraspObjectEnvCfg
 
 ##
