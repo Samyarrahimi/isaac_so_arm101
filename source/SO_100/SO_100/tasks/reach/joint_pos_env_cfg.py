@@ -45,6 +45,7 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
             asset_name="robot",
             joint_names=["Shoulder_Rotation", "Shoulder_Pitch", "Elbow", "Wrist_Pitch", "Wrist_Roll"],
             scale=0.5,
+            preserve_order=True,
             use_default_offset=True,
         )
         # override command generator body
@@ -59,7 +60,7 @@ class SoArm100ReachEnvCfg_PLAY(SoArm100ReachEnvCfg):
         # post init of parent
         super().__post_init__()
         # make a smaller scene for play
-        self.scene.num_envs = 50
+        self.scene.num_envs = 1
         self.scene.env_spacing = 2.5
         # disable randomization for play
         self.observations.policy.enable_corruption = False

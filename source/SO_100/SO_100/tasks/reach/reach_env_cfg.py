@@ -81,9 +81,9 @@ class CommandsCfg:
             pos_x=(-0.2, 0.2),
             pos_y=(-0.4, -0.1),
             pos_z=(0.1, 0.35),
-            roll=(0.0, 3.14), # x axis
-            pitch=(3.14, 3.14), # y axis 180 degree
-            yaw=(0.0, 0.0), # z axis
+            roll=(-3.14, 3.14), # x axis
+            pitch=(-3.14, 3.14), # y axis 180 degree
+            yaw=(-3.14, 3.14), # z axis
         ),
     )
 

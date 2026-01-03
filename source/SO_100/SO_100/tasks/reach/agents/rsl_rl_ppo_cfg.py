@@ -19,8 +19,8 @@ from isaaclab_rl.rsl_rl import (
 @configclass
 class ReachPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 1000
-    save_interval = 50
+    max_iterations = 3000
+    save_interval = 500
     experiment_name = "reach"
     run_name = ""
     resume = False
@@ -50,7 +50,7 @@ class ReachPPORunnerCfg(RslRlOnPolicyRunnerCfg):
 @configclass
 class ReachRosConPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 1000
+    max_iterations = 3000
     save_interval = 50
     experiment_name = "reach_roscon"
     run_name = ""
@@ -81,7 +81,7 @@ class ReachRosConPPORunnerCfg(RslRlOnPolicyRunnerCfg):
 @configclass
 class ReachRosConIKPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
-    max_iterations = 1000
+    max_iterations = 3000
     save_interval = 50
     experiment_name = "reach_roscon_ik"
     run_name = ""
