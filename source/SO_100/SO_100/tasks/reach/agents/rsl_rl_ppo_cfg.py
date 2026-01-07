@@ -20,7 +20,7 @@ from isaaclab_rl.rsl_rl import (
 class ReachPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 3000
-    save_interval = 500
+    save_interval = 1500
     experiment_name = "reach"
     run_name = ""
     resume = False
