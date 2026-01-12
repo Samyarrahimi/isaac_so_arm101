@@ -185,11 +185,11 @@ def randomize_shoulder_rotation(
         env: ManagerBasedRLEnv,
         env_ids: torch.Tensor,
         robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
-        min_angle: float = -1.56,
-        max_angle: float =  1.56
+        min_angle: float = -2.0,
+        max_angle: float =  2.0
     ) -> None:
     """
-    Randomise the Shoulder_Rotation joint for each environment in env_ids with a
+    Randomise the shoulder_pan joint for each environment in env_ids with a
     different value in [min_angle, max_angle].
 
     Returns:
@@ -208,9 +208,9 @@ def randomize_shoulder_rotation(
     # Loop through each env id and assign random value
     for idx in range(num_ids):
         angle = random.uniform(min_angle, max_angle)
-        # find index of “Shoulder_Rotation”
+        # find index of “shoulder_pan”
         joint_names = robot.data.joint_names
-        j_idx = joint_names.index("Shoulder_Rotation")
+        j_idx = joint_names.index("shoulder_pan")
         default_joint_pos[idx, j_idx] = angle
 
     # Write the state for all envs
@@ -259,7 +259,7 @@ def grasp_object(
 
     joint_names = data.joint_names
     # Find index for gripper joint
-    gripper_idx = joint_names.index("Gripper")
+    gripper_idx = joint_names.index("gripper")
 
     # Set gripper to closed value for all selected envs
     q[:, gripper_idx] = gripper_closed_value
@@ -315,8 +315,8 @@ def randomize_shoulder_pitch(
         env: ManagerBasedRLEnv,
         env_ids: torch.Tensor,
         robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
-        min_angle: float = -1.56,
-        max_angle: float =  1.56
+        min_angle: float = 0,
+        max_angle: float =  3.48
     ) -> None:
     """
     Randomise the Shoulder_Rotation joint for each environment in env_ids with a
@@ -338,9 +338,9 @@ def randomize_shoulder_pitch(
     # Loop through each env id and assign random value
     for idx in range(num_ids):
         angle = random.uniform(min_angle, max_angle)
-        # find index of “Shoulder_Rotation”
+        # find index of “shoulder_lift”
         joint_names = robot.data.joint_names
-        j_idx = joint_names.index("Shoulder_Pitch")
+        j_idx = joint_names.index("shoulder_lift")
         current_joint_pos[idx, j_idx] = angle
 
     # Write the state for all envs

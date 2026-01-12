@@ -50,7 +50,7 @@ def object_grasped(
     end_effector_pos = ee_frame.data.target_pos_w[:, 0, :]
     pose_diff = torch.linalg.vector_norm(object_pos - end_effector_pos, dim=1)
 
-    gripper_joint_ids, _ = robot.find_joints(["Gripper"])
+    gripper_joint_ids, _ = robot.find_joints(["gripper"])
     grasped = torch.logical_and(
         pose_diff < diff_threshold,
         torch.abs(
@@ -85,7 +85,7 @@ def object_is_grasped(
 
     # --- gripper closure check ---
     robot = env.scene[robot_cfg.name]
-    gripper_joint_id = robot.find_joints(["Gripper"])[0][0]
+    gripper_joint_id = robot.find_joints(["gripper"])[0][0]
     grip_pos = robot.data.joint_pos[:, gripper_joint_id].squeeze(-1)  # (num_envs,)
     closed_enough = grip_pos < grip_threshold
 
@@ -236,9 +236,9 @@ def randomize_shoulder_rotation(
     # Loop through each env id and assign random value
     for idx in range(num_ids):
         angle = random.uniform(min_angle, max_angle)
-        # find index of “Shoulder_Rotation”
+        # find index of “shoulder_pan”
         joint_names = robot.data.joint_names
-        j_idx = joint_names.index("Shoulder_Rotation")
+        j_idx = joint_names.index("shoulder_pan")
         default_joint_pos[idx, j_idx] = angle
 
     # Write the state for all envs

@@ -20,7 +20,7 @@ from isaaclab_rl.rsl_rl import (
 class OpenGripperPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 1000
-    save_interval = 50
+    save_interval = 500
     experiment_name = "open_gripper"
     run_name = ""
     resume = False

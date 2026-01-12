@@ -44,6 +44,7 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
             asset_name="robot",
             joint_names=["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll"],
             scale=0.5,
+            preserve_order=True,
             use_default_offset=True,
         )
         # override command generator body

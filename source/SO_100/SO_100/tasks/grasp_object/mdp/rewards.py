@@ -81,7 +81,7 @@ def object_grasped(
     end_effector_pos = ee_frame.data.target_pos_w[:, 0, :]
     pose_diff = torch.linalg.vector_norm(object_pos - end_effector_pos, dim=1)
 
-    gripper_joint_ids, _ = robot.find_joints(["Gripper"])
+    gripper_joint_ids, _ = robot.find_joints(["gripper"])
     grasped = torch.logical_and(
         pose_diff < diff_threshold,
         torch.abs(
@@ -122,7 +122,7 @@ def object_is_grasped(
 
     # --- gripper closure check ---
     robot = env.scene[robot_cfg.name]
-    gripper_joint_id = robot.find_joints(["Gripper"])[0][0]
+    gripper_joint_id = robot.find_joints(["gripper"])[0][0]
     grip_pos = robot.data.joint_pos[:, gripper_joint_id].squeeze(-1)  # (num_envs,)
     closed_enough = grip_pos < grip_threshold
 
@@ -131,40 +131,40 @@ def object_is_grasped(
 
 def check_grasped(
     env: ManagerBasedRLEnv,
-    contact_sensor_cfg: SceneEntityCfg = SceneEntityCfg("contact_sensor_moving"),
-    force_threshold: float = 1.0
+    contact_sensor_moving_cfg: SceneEntityCfg = SceneEntityCfg("contact_sensor_moving"),
+    contact_sensor_fixed_cfg: SceneEntityCfg = SceneEntityCfg("contact_sensor_fixed"),
+    force_threshold: float = 1.0,
+    combine: str = "and",          # "and" (recommended) or "or"
 ) -> torch.BoolTensor:
-    """
-    Returns a boolean tensor of shape [num_envs] indicating for each environment
-    whether the object has been grasped. Uses a ContactSensor and checks if 
-    the magnitude of forces in force_matrix_w exceeds `force_threshold`.
-    
-    Parameters
-    ----------
-    env : ManagerBasedRLEnv
-        The RL environment instance.
-    env_ids : torch.Tensor
-        tensor of environment indices (shape [num_envs], dtype=torch.int32/int64).
-    contact_sensor_cfg : SceneEntityCfg
-        Configuration specifying which contact sensor to use.
-    force_threshold : float
-        Threshold on contact-force magnitude to declare a "grasp".
-    """
-    sensor = env.scene[contact_sensor_cfg.name]
-    # force_matrix_w has shape (N_sensors, B, M, 3)
-    f_mat_full = sensor.data.force_matrix_w  # torch.Tensor
-    
-    # We assume one contact sensor per env (N_sensors == num_envs) OR
-    # else some mapping. Here we assume f_mat_full[env_index]
-    # For simplicity, assume N_sensors == num_envs and sensors aligned with envs.
-    
-    # Now we collapse B and M dims: e.g., sum or max over them
-    # Option: sum over B and M
-    f_sum = f_mat_full.sum(dim=(1, 2))  # shape (num_envs, 3)
-    
-    # Compute magnitude:
-    f_mag = torch.linalg.norm(f_sum, dim=-1)  # shape (num_envs,)
-    
-    # boolean mask
-    grasped_mask = f_mag > force_threshold  # shape (num_envs,)
+    sensor_moving = env.scene[contact_sensor_moving_cfg.name]
+    sensor_fixed = env.scene[contact_sensor_fixed_cfg.name]
+
+    f_moving = sensor_moving.data.force_matrix_w
+    f_fixed = sensor_fixed.data.force_matrix_w
+
+    if f_moving is None or f_fixed is None:
+        raise RuntimeError(
+            "force_matrix_w is None for at least one sensor. "
+            "Make sure ContactSensorCfg.filter_prim_paths_expr is set (filtered contacts enabled)."
+        )
+
+    # Replace NaNs (no contact pairs) with 0
+    f_moving = torch.nan_to_num(f_moving, nan=0.0)
+    f_fixed = torch.nan_to_num(f_fixed, nan=0.0)
+
+    # Sum over bodies (B) and filtered bodies (M) -> (N, 3)
+    f_sum_moving = f_moving.sum(dim=(1, 2))
+    f_sum_fixed  = f_fixed.sum(dim=(1, 2))
+
+    # Magnitude per env -> (N,)
+    f_mag_moving = torch.linalg.norm(f_sum_moving, dim=-1)
+    f_mag_fixed  = torch.linalg.norm(f_sum_fixed, dim=-1)
+
+    if combine.lower() == "and":
+        grasped_mask = (f_mag_moving > force_threshold) & (f_mag_fixed > force_threshold)
+    elif combine.lower() == "or":
+        grasped_mask = (f_mag_moving > force_threshold) | (f_mag_fixed > force_threshold)
+    else:
+        raise ValueError("combine must be 'and' or 'or'")
+
     return grasped_mask.to(env.device)

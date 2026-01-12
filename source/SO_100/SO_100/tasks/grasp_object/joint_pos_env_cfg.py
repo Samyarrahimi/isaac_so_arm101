@@ -44,19 +44,20 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
         # override actions
         self.actions.arm_action = mdp.JointPositionActionCfg(
             asset_name="robot",
-            joint_names=["Shoulder_Rotation", "Shoulder_Pitch", "Elbow", "Wrist_Pitch", "Wrist_Roll"],
+            joint_names=["shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll"],
             scale=0.5,
+            preserve_order=True,
             use_default_offset=True,
         )
         self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
             asset_name="robot",
-            joint_names=["Gripper"],
-            open_command_expr={"Gripper": 0.5},
-            close_command_expr={"Gripper": 0.0},
+            joint_names=["gripper"],
+            open_command_expr={"gripper": 0.5},
+            close_command_expr={"gripper": 0.0},
         )
 
         # Set the body name for the end effector
-        self.commands.object_pose.body_name = ["Fixed_Gripper"]
+        self.commands.object_pose.body_name = ["gripper"]
 
         self.scene.object = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/Object",
@@ -76,12 +77,12 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
         )
 
         self.scene.contact_sensor_moving = ContactSensorCfg(
-            prim_path="{ENV_REGEX_NS}/Robot/Moving_Jaw", 
+            prim_path="{ENV_REGEX_NS}/Robot/jaw", 
             filter_prim_paths_expr=["{ENV_REGEX_NS}/Object"],
         )
 
         self.scene.contact_sensor_fixed = ContactSensorCfg(
-            prim_path="{ENV_REGEX_NS}/Robot/Fixed_Gripper", 
+            prim_path="{ENV_REGEX_NS}/Robot/gripper", 
             filter_prim_paths_expr=["{ENV_REGEX_NS}/Object"],
         )
 
@@ -91,12 +92,12 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
         marker_cfg.markers["frame"].scale = (0.05, 0.05, 0.05)
         marker_cfg.prim_path = "/Visuals/FrameTransformer"
         self.scene.ee_frame = FrameTransformerCfg(
-            prim_path="{ENV_REGEX_NS}/Robot/Base",
+            prim_path="{ENV_REGEX_NS}/Robot/base",
             debug_vis=False,
             visualizer_cfg=marker_cfg,
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
-                    prim_path="{ENV_REGEX_NS}/Robot/Fixed_Gripper",
+                    prim_path="{ENV_REGEX_NS}/Robot/gripper",
                     name="end_effector",
                     offset=OffsetCfg(
                         pos=[0.01, 0.0, 0.1],

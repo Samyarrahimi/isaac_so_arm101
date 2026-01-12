@@ -239,4 +239,4 @@ class ReachObjectEnvCfg(ManagerBasedRLEnvCfg):
         self.episode_length_s = 5.0
         self.viewer.eye = (2.5, 2.5, 1.5)
         # simulation settings
-        self.sim.dt = 1.0 / 100.0
+        self.sim.dt = 1.0 / 60.0

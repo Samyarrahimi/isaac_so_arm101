@@ -104,7 +104,7 @@ class CommandsCfg:
         asset_name="robot",
         body_name=MISSING,  # will be set by agent env cfg
         resampling_time_range=(5.0, 5.0),
-        debug_vis=False,
+        debug_vis=True,
         ranges=mdp.UniformPoseCommandCfg.Ranges(
             pos_x=(-0.1, 0.1),
             pos_y=(-0.3, -0.1),
@@ -188,7 +188,7 @@ class EventCfg:
         params={
             "robot_cfg": SceneEntityCfg("robot"),
             "object_cfg": SceneEntityCfg("object"),
-            "local_offset_xyz": (0.0, 0.0, 0.09),
+            "local_offset_xyz": (0.0, -0.05, 0.1),
             "extra_z_lower": 0.0,
         },
     )
@@ -282,4 +282,4 @@ class GraspObjectEnvCfg(ManagerBasedRLEnvCfg):
         self.episode_length_s = 5.0
         self.viewer.eye = (2.5, 2.5, 1.5)
         # simulation settings
-        self.sim.dt = 1.0 / 100.0
+        self.sim.dt = 1.0 / 60.0

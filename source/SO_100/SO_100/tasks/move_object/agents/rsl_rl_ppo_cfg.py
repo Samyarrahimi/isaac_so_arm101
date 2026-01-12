@@ -20,7 +20,7 @@ from isaaclab_rl.rsl_rl import (
 class MoveObjectPPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 24
     max_iterations = 1500
-    save_interval = 50
+    save_interval = 500
     experiment_name = "move_object"
     empirical_normalization = False
     policy = RslRlPpoActorCriticCfg(

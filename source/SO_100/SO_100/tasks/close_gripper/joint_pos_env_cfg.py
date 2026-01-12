@@ -44,19 +44,20 @@ class SoArm100CloseGripperEnvCfg(CloseGripperEnvCfg):
         #     scale=0.5,
         #     use_default_offset=True,
         # )
-        # self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
+        self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
+            asset_name="robot",
+            joint_names=["gripper"],
+            open_command_expr={"gripper": 0.5},
+            close_command_expr={"gripper": 0.0},
+        )
+        # self.actions.gripper_action = mdp.JointPositionActionCfg(
         #     asset_name="robot",
         #     joint_names=["Gripper"],
-        #     open_command_expr={"Gripper": 0.5},
-        #     close_command_expr={"Gripper": 0.0},
+        #     scale=0.5,
+        #     use_default_offset=True,
+        #     preserve_order=True,
+        #     clip={"Gripper": (0.026, 0.698)},  # gripper joint limits
         # )
-        self.actions.gripper_action = mdp.JointPositionActionCfg(
-            asset_name="robot",
-            joint_names=["Gripper"],
-            scale=0.5,
-            use_default_offset=True,
-            clip={"Gripper": (0.026, 0.698)},  # gripper joint limits
-        )
 
 
 @configclass
