@@ -52,8 +52,8 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
         self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
             asset_name="robot",
             joint_names=["gripper"],
-            open_command_expr={"gripper": 0.5},
-            close_command_expr={"gripper": 0.0},
+            open_command_expr={"gripper": 1.5},
+            close_command_expr={"gripper": -0.1},
         )
 
         # Set the body name for the end effector
@@ -64,7 +64,7 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
             init_state=RigidObjectCfg.InitialStateCfg(pos=[0.2, 0.0, 0.015], rot=[1, 0, 0, 0]),
             spawn=UsdFileCfg(
                 usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/DexCube/dex_cube_instanceable.usd",
-                scale=(0.3, 0.3, 0.3),
+                scale=(0.5, 0.5, 0.5),
                 rigid_props=RigidBodyPropertiesCfg(
                     solver_position_iteration_count=16,
                     solver_velocity_iteration_count=1,
@@ -93,14 +93,14 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
         marker_cfg.prim_path = "/Visuals/FrameTransformer"
         self.scene.ee_frame = FrameTransformerCfg(
             prim_path="{ENV_REGEX_NS}/Robot/base",
-            debug_vis=False,
+            debug_vis=True,
             visualizer_cfg=marker_cfg,
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
                     prim_path="{ENV_REGEX_NS}/Robot/gripper",
                     name="end_effector",
                     offset=OffsetCfg(
-                        pos=[0.01, 0.0, 0.1],
+                        pos=[0.0, -0.09, 0.01],
                     ),
                 ),
             ],

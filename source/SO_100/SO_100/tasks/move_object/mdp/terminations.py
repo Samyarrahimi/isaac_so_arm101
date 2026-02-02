@@ -70,7 +70,8 @@ def set_object_position(
         robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
         object_cfg: SceneEntityCfg = SceneEntityCfg("object"),
         local_offset_xyz=(0.0, 0.0, 0.09),
-        extra_z_lower=0.0
+        extra_z_lower=0.0,
+        gripper_link_name: str = "gripper",
     ) -> None:
     """
     Set the object position in front of the robot's fixed gripper for the given env_ids.
@@ -82,21 +83,24 @@ def set_object_position(
         object_cfg: SceneEntityCfg for the object asset.
         local_offset_xyz: (x, y, z) offset in the robot fixed-gripper's local frame.
         extra_z_lower: extra downward offset (in world Z) to adjust height.
+        gripper_link_name: name of the fixed gripper body/link.
     Returns:
         None
     """
-    #print("set_object_position called with env_ids:", env_ids)
     robot = env.scene[robot_cfg.name]
     obj   = env.scene[object_cfg.name]
 
     art_data = robot.data
     link_states = art_data.body_link_state_w  # shape (num_envs, num_links, 13)
 
+    # Look up the gripper link index by name
+    body_names = art_data.body_names
+    gripper_link_idx = body_names.index(gripper_link_name)
+
     ids = env_ids.cpu().tolist()
 
     for idx in ids:
-        # Fixed_Gripper is index -2
-        pose_fixed = link_states[idx, -2]  
+        pose_fixed = link_states[idx, gripper_link_idx]
 
         pg = pose_fixed[:3]
         pg_x, pg_y, pg_z = float(pg[0]), float(pg[1]), float(pg[2])
@@ -305,7 +309,7 @@ def check_released(
     # Compute magnitude:
     f_mag = torch.linalg.norm(f_sum, dim=-1)  # shape (num_envs,)
 
-    #print("Force magnitudes:", f_mag)  # Debug print
+    print("Force magnitudes:", f_mag)  # Debug print
     
     # boolean mask
     grasped_mask = f_mag > force_threshold  # shape (num_envs,)

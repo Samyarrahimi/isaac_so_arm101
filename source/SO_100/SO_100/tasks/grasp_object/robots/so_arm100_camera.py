@@ -46,11 +46,11 @@ SO_ARM100_CAMERA_CFG = ArticulationCfg(
         rot=(0.7071, 0.0, 0.0, 0.7071),
         joint_pos={
             "shoulder_pan": 0.0,
-            "shoulder_lift": 3.22,
-            "elbow_flex": -2.61,
-            "wrist_flex": -0.61,
+            "shoulder_lift": 1.57, #3.22,
+            "elbow_flex": -1.57, #-2.61,
+            "wrist_flex": 1.0, #-0.61,
             "wrist_roll": -1.57,
-            "gripper": 0.52,
+            "gripper": 0.5, #0.52
         },
         # Set initial joint velocities to zero
         joint_vel={".*": 0.0},

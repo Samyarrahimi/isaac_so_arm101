@@ -59,7 +59,7 @@ class MoveObjectTableSceneCfg(InteractiveSceneCfg):
         spawn=sim_utils.UsdFileCfg(
             usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Mounts/SeattleLabTable/table_instanceable.usd",
         ),
-        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.55, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.5, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
     )
     
     # lights
@@ -110,9 +110,9 @@ class CommandsCfg:
         ranges=mdp.UniformPoseCommandCfg.Ranges(
             pos_x=(-0.1, 0.1),
             pos_y=(-0.3, -0.1),
-            pos_z=(0.1, 0.35),
-            roll=(0.0, 3.14), # x axis
-            pitch=(3.14, 3.14), # y axis 180 degree
+            pos_z=(0.2, 0.35),
+            roll=(0.0, 0.0), # x axis
+            pitch=(0.0, 0.0), # y axis 180 degree = 3.14 rad
             yaw=(0.0, 0.0), # z axis
         ),
     )
@@ -136,8 +136,8 @@ class ObservationsCfg:
         """Observations for policy group."""
 
         # observation terms (order preserved)
-        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
-        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
+        joint_pos = ObsTerm(func=mdp.joint_pos_rel)#, noise=Unoise(n_min=-0.01, n_max=0.01))
+        joint_vel = ObsTerm(func=mdp.joint_vel_rel)#, noise=Unoise(n_min=-0.01, n_max=0.01))
         object_position = ObsTerm(func=mdp.object_position_in_robot_root_frame)
         target_object_position = ObsTerm(func=mdp.generated_commands, params={"command_name": "object_pose"})
         actions = ObsTerm(func=mdp.last_action) 
@@ -200,7 +200,7 @@ class EventCfg:
         params={
             "robot_cfg": SceneEntityCfg("robot"),
             "object_cfg": SceneEntityCfg("object"),
-            "local_offset_xyz": (0.0, -0.05, 0.1),
+            "local_offset_xyz": (0.0, -0.09, 0.01),
             "extra_z_lower": 0.0,
         },
     )
@@ -211,7 +211,7 @@ class EventCfg:
         params = {
             "robot_cfg": SceneEntityCfg("robot"),
             "object_cfg": SceneEntityCfg("object"),
-            "gripper_closed_value": 0.2
+            "gripper_closed_value": -0.1
         },
     )
 
@@ -251,7 +251,11 @@ class TerminationsCfg:
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
 
-    object_released = DoneTerm(func=my_mdp.check_released, params={"force_threshold": 30.0})
+    object_dropping = DoneTerm(
+        func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
+    )
+
+    object_released = DoneTerm(func=my_mdp.check_released, params={"force_threshold": 0.0})
 
 
 @configclass
@@ -298,7 +302,6 @@ class MoveEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.dt = 1.0 / 60.0
         self.sim.render_interval = self.decimation
 
-        # TODO do we need all these physx settings?
         self.sim.physx.bounce_threshold_velocity = 0.2
         self.sim.physx.bounce_threshold_velocity = 0.01
         self.sim.physx.gpu_found_lost_aggregate_pairs_capacity = 1024 * 1024 * 4

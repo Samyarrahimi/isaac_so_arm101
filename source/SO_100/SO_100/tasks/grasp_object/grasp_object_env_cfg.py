@@ -57,7 +57,7 @@ class GraspObjectSceneCfg(InteractiveSceneCfg):
         spawn=sim_utils.UsdFileCfg(
             usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Mounts/SeattleLabTable/table_instanceable.usd",
         ),
-        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.55, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.5, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
     )
     
     # lights
@@ -133,8 +133,8 @@ class ObservationsCfg:
         """Observations for policy group."""
 
         # observation terms (order preserved)
-        joint_pos = ObsTerm(func=mdp.joint_pos_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
-        joint_vel = ObsTerm(func=mdp.joint_vel_rel, noise=Unoise(n_min=-0.01, n_max=0.01))
+        joint_pos = ObsTerm(func=mdp.joint_pos_rel)#, noise=Unoise(n_min=-0.01, n_max=0.01))
+        joint_vel = ObsTerm(func=mdp.joint_vel_rel)#, noise=Unoise(n_min=-0.01, n_max=0.01))
         object_position = ObsTerm(func=mdp.object_position_in_robot_root_frame)
         target_object_position = ObsTerm(func=mdp.generated_commands, params={"command_name": "object_pose"})
         actions = ObsTerm(func=mdp.last_action) 
@@ -152,69 +152,66 @@ class ObservationsCfg:
 class EventCfg:
     """Configuration for events."""
 
-    #reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
-    # reset_object_position = EventTerm(
-    #     func=mdp.reset_root_state_uniform,
+    reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
+
+    reset_object_position = EventTerm(
+        func=mdp.reset_root_state_uniform,
+        mode="reset",
+        params={
+            "pose_range": {"x": (-0.1, 0.1), "y": (-0.2, 0.2), "z": (0.0, 0.0)},
+            "velocity_range": {},
+            "asset_cfg": SceneEntityCfg("object", body_names="Object"),
+        },
+    )
+
+    # randomize_joints = EventTerm(
+    #     func=my_mdp.randomize_robot_joint_positions,
     #     mode="reset",
     #     params={
-    #         "pose_range": {"x": (-0.1, 0.1), "y": (-0.2, 0.2), "z": (0.0, 0.0)},
-    #         "velocity_range": {},
-    #         "asset_cfg": SceneEntityCfg("object", body_names="Object"),
+    #         "robot_cfg": SceneEntityCfg("robot"),
+    #         "joint_noise_std": 0.05,
+    #     },
+    # )
+    
+    # random_shoulder_rotation = EventTerm(
+    #     func=my_mdp.randomize_shoulder_rotation,
+    #     mode="reset",
+    #     params={
+    #         "robot_cfg": SceneEntityCfg("robot"),
+    #         "min_angle": -1.56,
+    #         "max_angle":  1.56,
     #     },
     # )
 
-    randomize_joints = EventTerm(
-        func=my_mdp.randomize_robot_joint_positions,
-        mode="reset",
-        params={
-            "robot_cfg": SceneEntityCfg("robot"),
-            "joint_noise_std": 0.05,
-        },
-    )
-
-    random_shoulder_rotation = EventTerm(
-        func=my_mdp.randomize_shoulder_rotation,
-        mode="reset",
-        params={
-            "robot_cfg": SceneEntityCfg("robot"),
-            "min_angle": -1.56,
-            "max_angle":  1.56,
-        },
-    )
-
-    reset_object_position = EventTerm(
-        func=my_mdp.set_object_position,
-        mode="reset",
-        params={
-            "robot_cfg": SceneEntityCfg("robot"),
-            "object_cfg": SceneEntityCfg("object"),
-            "local_offset_xyz": (0.0, -0.05, 0.1),
-            "extra_z_lower": 0.0,
-        },
-    )
+    # reset_object_position = EventTerm(
+    #     func=my_mdp.set_object_position,
+    #     mode="reset",
+    #     params={
+    #         "robot_cfg": SceneEntityCfg("robot"),
+    #         "object_cfg": SceneEntityCfg("object"),
+    #         "local_offset_xyz": (-0.01, -0.08, 0.03),
+    #         "extra_z_lower": 0.0,
+    #     },
+    # )
 
 
 
 @configclass
 class RewardsCfg:
     """Reward terms for the MDP."""
-
     reaching_object = RewTerm(func=mdp.object_ee_distance, params={"std": 0.05}, weight=1.0)
 
-    grasp_object = RewTerm(func=my_mdp.check_grasped, weight=20.0)
-
-    #grasp_object = RewTerm(func=my_mdp.object_grasped, weight=20.0)
-
+    lifting_object = RewTerm(func=mdp.object_is_lifted, params={"minimal_height": 0.025}, weight=25.0)
 
     object_goal_tracking = RewTerm(
         func=mdp.object_goal_distance,
-        params={"std": 0.3, "minimal_height": 0.04, "command_name": "object_pose"},
+        params={"std": 0.3, "minimal_height": 0.025, "command_name": "object_pose"},
         weight=16.0,
     )
 
     object_goal_tracking_fine_grained = RewTerm(
         func=mdp.object_goal_distance,
-        params={"std": 0.05, "minimal_height": 0.04, "command_name": "object_pose"},
+        params={"std": 0.05, "minimal_height": 0.025, "command_name": "object_pose"},
         weight=5.0,
     )
 
@@ -233,11 +230,13 @@ class TerminationsCfg:
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
 
-    # object_dropping = DoneTerm(
-    #     func=mdp.root_height_below_minimum, params={"minimum_height": -0.08, "asset_cfg": SceneEntityCfg("object")}
-    # )
+    object_dropping = DoneTerm(
+        func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
+    )
 
-    #object_grasped = DoneTerm(func=my_mdp.object_grasped)
+    # ee_object_too_far = DoneTerm(
+    #     func=my_mdp.ee_object_too_far, params={"max_distance": 0.3}
+    # )
 
 
 @configclass
@@ -245,11 +244,11 @@ class CurriculumCfg:
     """Curriculum terms for the MDP."""
 
     action_rate = CurrTerm(
-        func=mdp.modify_reward_weight, params={"term_name": "action_rate", "weight": -1e-1, "num_steps": 10000}
+        func=mdp.modify_reward_weight, params={"term_name": "action_rate", "weight": -1e-2, "num_steps": 10000}
     )
 
     joint_vel = CurrTerm(
-        func=mdp.modify_reward_weight, params={"term_name": "joint_vel", "weight": -1e-1, "num_steps": 10000}
+        func=mdp.modify_reward_weight, params={"term_name": "joint_vel", "weight": -1e-2, "num_steps": 10000}
     )
 
 
@@ -283,3 +282,9 @@ class GraspObjectEnvCfg(ManagerBasedRLEnvCfg):
         self.viewer.eye = (2.5, 2.5, 1.5)
         # simulation settings
         self.sim.dt = 1.0 / 60.0
+
+        self.sim.physx.bounce_threshold_velocity = 0.2
+        self.sim.physx.bounce_threshold_velocity = 0.01
+        self.sim.physx.gpu_found_lost_aggregate_pairs_capacity = 1024 * 1024 * 4
+        self.sim.physx.gpu_total_aggregate_pairs_capacity = 16 * 1024
+        self.sim.physx.friction_correlation_distance = 0.00625

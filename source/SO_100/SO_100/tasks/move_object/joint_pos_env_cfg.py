@@ -44,8 +44,8 @@ class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
         self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
             asset_name="robot",
             joint_names=["gripper"],
-            open_command_expr={"gripper": 0.5},
-            close_command_expr={"gripper": 0.0},
+            open_command_expr={"gripper": 1.5},
+            close_command_expr={"gripper": -0.1},
         )
         # Set the body name for the end effector
         self.commands.object_pose.body_name = ["gripper"]
@@ -84,14 +84,14 @@ class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
         marker_cfg.prim_path = "/Visuals/FrameTransformer"
         self.scene.ee_frame = FrameTransformerCfg(
             prim_path="{ENV_REGEX_NS}/Robot/base",
-            debug_vis=False,
+            debug_vis=True,
             visualizer_cfg=marker_cfg,
             target_frames=[
                 FrameTransformerCfg.FrameCfg(
                     prim_path="{ENV_REGEX_NS}/Robot/gripper",
                     name="end_effector",
                     offset=OffsetCfg(
-                        pos=[0.01, 0.0, 0.1],
+                        pos=[0.0, -0.09, 0.01],
                     ),
                 ),
             ],
