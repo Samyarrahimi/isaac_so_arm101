@@ -33,6 +33,7 @@ from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg, UsdFileCfg
 from isaaclab.utils import configclass
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
+from isaaclab.sensors import CameraCfg, TiledCameraCfg
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
 
 ##
@@ -91,6 +92,9 @@ class MoveObjectTableSceneCfg(InteractiveSceneCfg):
     # contact sensor
     contact_sensor_moving: ContactSensorCfg = MISSING
     contact_sensor_fixed: ContactSensorCfg = MISSING
+
+    context_camera: TiledCameraCfg = MISSING
+    wrist_camera: TiledCameraCfg = MISSING
 
 
 ##

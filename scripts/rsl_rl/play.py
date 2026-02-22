@@ -39,14 +39,16 @@ parser.add_argument(
     help="Use the pre-trained checkpoint from Nucleus.",
 )
 parser.add_argument("--real-time", action="store_true", default=False, help="Run in real-time, if possible.")
+parser.add_argument("--save_images", action="store_true", default=False, help="Save context and wrist camera images during play.")
+parser.add_argument("--save_images_interval", type=int, default=10, help="Save camera images every N steps.")
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
 # parse the arguments
 args_cli, hydra_args = parser.parse_known_args()
-# always enable cameras to record video
-if args_cli.video:
+# always enable cameras to record video or save images
+if args_cli.video or args_cli.save_images:
     args_cli.enable_cameras = True
 
 # clear out sys.argv for Hydra
@@ -62,6 +64,7 @@ import os
 import time
 
 import gymnasium as gym
+import PIL.Image as PILImage
 import isaaclab_tasks  # noqa: F401
 import SO_100.tasks  # noqa: F401
 import torch
@@ -177,6 +180,20 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     dt = env.unwrapped.step_dt
 
+    # set up image saving directories
+    if args_cli.save_images:
+        # "SO-ARM100-Grasp-Object-v0" -> "grasp_object", "SO-ARM100-Reach-v0" -> "reach"
+        task_slug = "_".join(train_task_name.split("-")[2:-1]).lower()
+        repo_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        context_img_dir = os.path.join(repo_dir, "isaac_so_arm101_imgs", task_slug, "context")
+        wrist_img_dir = os.path.join(repo_dir, "isaac_so_arm101_imgs", task_slug, "wrist")
+        os.makedirs(context_img_dir, exist_ok=True)
+        os.makedirs(wrist_img_dir, exist_ok=True)
+        print(f"[INFO] Saving context camera images to: {context_img_dir}")
+        print(f"[INFO] Saving wrist camera images to:   {wrist_img_dir}")
+        img_iter = 1
+        img_step = 0
+
     # reset environment
     obs = env.get_observations()
     timestep = 0
@@ -188,12 +205,28 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
             # agent stepping
             actions = policy(obs)
             # env stepping
-            obs, _, _, _ = env.step(actions)
+            obs, _, dones, _ = env.step(actions)
         if args_cli.video:
             timestep += 1
             # Exit the play loop after recording one video
             if timestep == args_cli.video_length:
                 break
+
+        if args_cli.save_images:
+            if img_step % args_cli.save_images_interval == 0:
+                sensors = env.unwrapped.scene.sensors
+                if "context_camera" in sensors:
+                    rgb = sensors["context_camera"].data.output["rgb"]
+                    img = PILImage.fromarray(rgb[0].cpu().numpy())
+                    img.save(os.path.join(context_img_dir, f"context_{task_slug}_{img_iter}_{img_step}.png"))
+                if "wrist_camera" in sensors:
+                    rgb = sensors["wrist_camera"].data.output["rgb"]
+                    img = PILImage.fromarray(rgb[0].cpu().numpy())
+                    img.save(os.path.join(wrist_img_dir, f"wrist_{task_slug}_{img_iter}_{img_step}.png"))
+            img_step += 1
+            if dones[0]:
+                img_iter += 1
+                img_step = 0
 
         # time delay for real-time evaluation
         sleep_time = dt - (time.time() - start_time)

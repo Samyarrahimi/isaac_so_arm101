@@ -15,6 +15,7 @@
 
 
 # import mdp
+import isaaclab.sim as sim_utils
 import isaaclab_tasks.manager_based.manipulation.reach.mdp as mdp
 from isaaclab.utils import configclass
 from isaaclab.assets import RigidObjectCfg
@@ -22,6 +23,7 @@ from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransformerCfg, OffsetCfg
 from isaaclab.sensors.contact_sensor.contact_sensor_cfg import ContactSensorCfg
+from isaaclab.sensors import CameraCfg, TiledCameraCfg
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.markers.config import FRAME_MARKER_CFG
 
@@ -123,6 +125,62 @@ class SoArm100GraspObjectEnvCfg(GraspObjectEnvCfg):
                 ),
             ],
         )
+
+        self.scene.context_camera = TiledCameraCfg(
+            prim_path="{ENV_REGEX_NS}/Robot/base/context_camera",
+            update_period=0.04,
+            height=360,
+            width=640,
+            data_types=["rgb"],
+            spawn=sim_utils.PinholeCameraCfg(
+                focal_length=24.0,
+                focus_distance=400.0,
+                horizontal_aperture=20.955,
+                clipping_range=(0.0001, 1.0e5),
+            ),
+            offset=CameraCfg.OffsetCfg(
+                pos=(1, -1.3, 1.5),
+                rot=(0.8189, 0.3664, 0.1354, 0.4202),
+                convention="opengl",
+            ),
+            update_latest_camera_pose=True,
+        )
+
+        self.scene.wrist_camera = TiledCameraCfg(
+            prim_path="{ENV_REGEX_NS}/Robot/wrist/Realsense/RSD455/wrist_camera",
+            update_period=0.04,
+            height=360,
+            width=640,
+            data_types=["rgb"],
+            spawn=sim_utils.PinholeCameraCfg(
+                focal_length=1.93,
+                focus_distance=0.5,
+                horizontal_aperture=3.896,
+                vertical_aperture=2.453,
+                clipping_range=(0.0001, 1.0e5),
+            ),
+            offset=CameraCfg.OffsetCfg(
+                pos=(0.0, 0.0115, 0.0),
+                rot=(0.5, 0.5, 0.5, 0.5),
+                convention="opengl",
+            ),
+        )
+
+        # mesh for context camera (not a necessity but just to make it nicer)
+        # rotation here (0.8601, -0.4253, -0.1244, 0.2535) is not the same as rotation in context_camera but they look similar
+        # position is absolutely correct but the orientation is a bit off. at the end it does not matter as we will not use the camera in Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd for observations, we will use it just for visualization. The important thing is that the camera pose is correct, which it is.
+        # this just acts as a mesh which is also not a necessity)
+        # self.scene.context_camera_mesh = AssetBaseCfg(
+        #     prim_path="{ENV_REGEX_NS}/Robot/base/context_camera_mesh",
+        #     init_state=AssetBaseCfg.InitialStateCfg(
+        #         pos=(0.8, -1.5, 1.7),
+        #         rot=(0.8601, -0.4253, -0.1244, 0.2535),
+        #     ),
+        #     spawn=UsdFileCfg(
+        #         usd_path=f"{ISAAC_NUCLEUS_DIR}/Sensors/Sensing/SG2/H60YA/Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd",
+        #         scale=(1.0, 1.0, 1.0),
+        #     ),
+        # )
 
 
 @configclass
