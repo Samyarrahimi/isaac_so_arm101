@@ -63,9 +63,10 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
             width=640,
             data_types=["rgb"],
             spawn=sim_utils.PinholeCameraCfg(
-                focal_length=24.0,
-                focus_distance=400.0,
-                horizontal_aperture=20.955,
+                focal_length=5.75,
+                focus_distance=700.0,
+                horizontal_aperture=5.76,
+                vertical_aperture=3.24,
                 clipping_range=(0.0001, 1.0e5),
             ),
             offset=CameraCfg.OffsetCfg(
