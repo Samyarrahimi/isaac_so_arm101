@@ -185,8 +185,15 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         # "SO-ARM100-Grasp-Object-v0" -> "grasp_object", "SO-ARM100-Reach-v0" -> "reach"
         task_slug = "_".join(train_task_name.split("-")[2:-1]).lower()
         repo_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-        context_img_dir = os.path.join(repo_dir, "isaac_so_arm101_imgs", task_slug, "context")
-        wrist_img_dir = os.path.join(repo_dir, "isaac_so_arm101_imgs", task_slug, "wrist")
+        # detect object name from scene class, e.g. GraspObjectSceneWithBoltCfg -> "bolt"
+        scene_class_name = type(env.unwrapped.cfg.scene).__name__
+        if "With" in scene_class_name:
+            object_name = scene_class_name.split("With")[1].replace("Cfg", "").lower()
+            img_base_dir = os.path.join(repo_dir, "isaac_so_arm101_imgs", task_slug, object_name)
+        else:
+            img_base_dir = os.path.join(repo_dir, "isaac_so_arm101_imgs", task_slug)
+        context_img_dir = os.path.join(img_base_dir, "context")
+        wrist_img_dir = os.path.join(img_base_dir, "wrist")
         os.makedirs(context_img_dir, exist_ok=True)
         os.makedirs(wrist_img_dir, exist_ok=True)
         print(f"[INFO] Saving context camera images to: {context_img_dir}")

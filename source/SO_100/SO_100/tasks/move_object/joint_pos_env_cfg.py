@@ -58,22 +58,22 @@ class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
         self.commands.object_pose.body_name = ["gripper"]
 
         # Set Cube as object
-        self.scene.object = RigidObjectCfg(
-            prim_path="{ENV_REGEX_NS}/Object",
-            init_state=RigidObjectCfg.InitialStateCfg(pos=[0.2, 0.0, 0.015], rot=[1, 0, 0, 0]),
-            spawn=UsdFileCfg(
-                usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/DexCube/dex_cube_instanceable.usd",
-                scale=(0.3, 0.3, 0.3),
-                rigid_props=RigidBodyPropertiesCfg(
-                    solver_position_iteration_count=16,
-                    solver_velocity_iteration_count=1,
-                    max_angular_velocity=1000.0,
-                    max_linear_velocity=1000.0,
-                    max_depenetration_velocity=5.0,
-                    disable_gravity=False,
-                ),
-            ),
-        )
+        # self.scene.object = RigidObjectCfg(
+        #     prim_path="{ENV_REGEX_NS}/Object",
+        #     init_state=RigidObjectCfg.InitialStateCfg(pos=[0.2, 0.0, 0.015], rot=[1, 0, 0, 0]),
+        #     spawn=UsdFileCfg(
+        #         usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/DexCube/dex_cube_instanceable.usd",
+        #         scale=(0.3, 0.3, 0.3),
+        #         rigid_props=RigidBodyPropertiesCfg(
+        #             solver_position_iteration_count=16,
+        #             solver_velocity_iteration_count=1,
+        #             max_angular_velocity=1000.0,
+        #             max_linear_velocity=1000.0,
+        #             max_depenetration_velocity=5.0,
+        #             disable_gravity=False,
+        #         ),
+        #     ),
+        # )
 
         self.scene.contact_sensor_moving = ContactSensorCfg(
             prim_path="{ENV_REGEX_NS}/Robot/jaw", 
@@ -107,20 +107,20 @@ class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
         cube_marker_cfg = FRAME_MARKER_CFG.copy()
         cube_marker_cfg.markers["frame"].scale = (0.05, 0.05, 0.05)
         cube_marker_cfg.prim_path = "/Visuals/CubeFrameMarker"
-        self.scene.cube_marker = FrameTransformerCfg(
-            prim_path="{ENV_REGEX_NS}/Object",
-            visualizer_cfg=cube_marker_cfg,
-            debug_vis=False,  # disable visualization
-            target_frames=[
-                FrameTransformerCfg.FrameCfg(
-                    prim_path="{ENV_REGEX_NS}/Object",
-                    name="cube",
-                    offset=OffsetCfg(
-                        pos=(0.0, 0.0, 0.0),
-                    ),
-                ),
-            ],
-        )
+        # self.scene.cube_marker = FrameTransformerCfg(
+        #     prim_path="{ENV_REGEX_NS}/Object",
+        #     visualizer_cfg=cube_marker_cfg,
+        #     debug_vis=False,  # disable visualization
+        #     target_frames=[
+        #         FrameTransformerCfg.FrameCfg(
+        #             prim_path="{ENV_REGEX_NS}/Object",
+        #             name="cube",
+        #             offset=OffsetCfg(
+        #                 pos=(0.0, 0.0, 0.0),
+        #             ),
+        #         ),
+        #     ],
+        # )
 
         self.scene.context_camera = TiledCameraCfg(
             prim_path="{ENV_REGEX_NS}/Robot/base/context_camera",

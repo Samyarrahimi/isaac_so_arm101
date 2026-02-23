@@ -33,13 +33,16 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.managers import TerminationTermCfg as DoneTerm
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.utils import configclass
+from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg, ArticulationRootPropertiesCfg
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.sensors import CameraCfg, TiledCameraCfg
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
-
+from pathlib import Path
 ##
 # Scene definition
 ##
+
+TEMPLATE_ASSETS_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
 
 
 @configclass
@@ -47,11 +50,20 @@ class GraspObjectSceneCfg(InteractiveSceneCfg):
     """Configuration for the scene with a robotic arm."""
 
     # world
-    ground = AssetBaseCfg(
-        prim_path="/World/ground",
-        spawn=sim_utils.GroundPlaneCfg(),
-        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
+    # ground = AssetBaseCfg(
+    #     prim_path="/World/ground",
+    #     spawn=sim_utils.GroundPlaneCfg(),
+    #     init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
+    # )
+
+    warehouse = AssetBaseCfg(
+        prim_path="/World/warehouse",
+        spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Environments/Simple_Warehouse/warehouse.usd"),
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=(0.0, 0.0, -1.05),
+        ),
     )
+
 
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
@@ -75,7 +87,7 @@ class GraspObjectSceneCfg(InteractiveSceneCfg):
 
     # markers
     ee_frame: FrameTransformerCfg = MISSING
-    cube_marker: FrameTransformerCfg = MISSING
+    #cube_marker: FrameTransformerCfg = None
 
     # contact sensor
     contact_sensor_moving: ContactSensorCfg = MISSING
@@ -84,6 +96,117 @@ class GraspObjectSceneCfg(InteractiveSceneCfg):
     context_camera: TiledCameraCfg = MISSING
     wrist_camera: TiledCameraCfg = MISSING
 
+
+@configclass
+class GraspObjectSceneWithBoltCfg(GraspObjectSceneCfg):
+    """Scene Class for Grasp Object Task with Bolt considered for kitting, sorting"""
+
+    # usd_path="https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/IsaacLab/Factory/factory_bolt_m16.usd"
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_bolt_m16.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class GraspObjectSceneWithGearCfg(GraspObjectSceneCfg):
+    """Scene Class for Grasp Object Task with Gear considered for kitting, sorting"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_gear_large.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class GraspObjectSceneWithNutCfg(GraspObjectSceneCfg):
+    """Scene Class for Grasp Object Task with Nut considered for kitting, sorting"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_nut_m16.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class GraspObjectSceneWithPegCfg(GraspObjectSceneCfg):
+    """Scene Class for Grasp Object Task with Peg considered for kitting, sorting"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_peg_8mm.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class GraspObjectSceneWithBoxCfg(GraspObjectSceneCfg):
+    """Scene Class for Grasp Object Task with Box considered for stacking, unstacking scenarios"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/green_block.usd",
+            scale=(0.7, 0.7, 0.7),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
 
 ##
 # MDP settings
@@ -154,7 +277,7 @@ class EventCfg:
         params={
             "pose_range": {"x": (-0.1, 0.1), "y": (-0.2, 0.2), "z": (0.0, 0.0)},
             "velocity_range": {},
-            "asset_cfg": SceneEntityCfg("object", body_names="Object"),
+            "asset_cfg": SceneEntityCfg("object"),
         },
     )
 
@@ -256,7 +379,8 @@ class GraspObjectEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for the reach end-effector pose tracking environment."""
 
     # Scene settings
-    scene: GraspObjectSceneCfg = GraspObjectSceneCfg(num_envs=4096, env_spacing=2.5)
+    #scene: GraspObjectSceneCfg = GraspObjectSceneCfg(num_envs=4096, env_spacing=2.5)
+    scene: GraspObjectSceneCfg | GraspObjectSceneWithBoltCfg | GraspObjectSceneWithGearCfg | GraspObjectSceneWithNutCfg | GraspObjectSceneWithPegCfg | GraspObjectSceneWithBoxCfg = GraspObjectSceneWithBoxCfg(num_envs=4096, env_spacing=2.5)
     # Basic settings
     observations: ObservationsCfg = ObservationsCfg()
     actions: ActionsCfg = ActionsCfg()

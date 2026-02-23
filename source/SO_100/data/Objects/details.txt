@@ -1,0 +1,14 @@
+factory_bolt_m16:
+deactivated root_joint in the USD file and set /factory_bolt_m16 as default prim
+
+factory_gear_large:
+set /factory_gear_large as default prim
+
+factory_nut_m16:
+set /factory_nut_m16 as default prim
+
+factory_peg_8mm:
+set /factory_peg_8mm as default prim
+
+green_block:
+set /green_block as default prim

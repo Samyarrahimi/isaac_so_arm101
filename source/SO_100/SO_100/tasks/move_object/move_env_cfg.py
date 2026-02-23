@@ -32,28 +32,41 @@ from isaaclab.sensors.contact_sensor.contact_sensor_cfg import ContactSensorCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg, UsdFileCfg
 from isaaclab.utils import configclass
+from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg, ArticulationRootPropertiesCfg
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
 from isaaclab.sensors import CameraCfg, TiledCameraCfg
 from isaaclab.utils.noise import AdditiveUniformNoiseCfg as Unoise
+from pathlib import Path
 
 ##
 # Scene definition
 ##
 
+TEMPLATE_ASSETS_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
+
 
 @configclass
-class MoveObjectTableSceneCfg(InteractiveSceneCfg):
+class MoveObjectSceneCfg(InteractiveSceneCfg):
     """Configuration for the move scene with a robot and a object.
     This is the abstract base implementation, the exact scene is defined in the derived classes
     which need to set the target object, robot and end-effector frames
     """
 
     # world
-    ground = AssetBaseCfg(
-        prim_path="/World/ground",
-        spawn=sim_utils.GroundPlaneCfg(),
-        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
+    # ground = AssetBaseCfg(
+    #     prim_path="/World/ground",
+    #     spawn=sim_utils.GroundPlaneCfg(),
+    #     init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
+    # )
+
+    warehouse = AssetBaseCfg(
+        prim_path="/World/warehouse",
+        spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Environments/Simple_Warehouse/warehouse.usd"),
+        init_state=AssetBaseCfg.InitialStateCfg(
+            pos=(0.0, 0.0, -1.05),
+        ),
     )
+
 
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
@@ -87,7 +100,7 @@ class MoveObjectTableSceneCfg(InteractiveSceneCfg):
 
     # end-effector sensor: will be populated by agent env cfg
     ee_frame: FrameTransformerCfg = MISSING
-    cube_marker: FrameTransformerCfg = MISSING
+    #cube_marker: FrameTransformerCfg = MISSING
     
     # contact sensor
     contact_sensor_moving: ContactSensorCfg = MISSING
@@ -95,6 +108,118 @@ class MoveObjectTableSceneCfg(InteractiveSceneCfg):
 
     context_camera: TiledCameraCfg = MISSING
     wrist_camera: TiledCameraCfg = MISSING
+
+
+@configclass
+class MoveObjectSceneWithBoltCfg(MoveObjectSceneCfg):
+    """Scene Class for Move Object Task with Bolt considered for kitting, sorting"""
+
+    # usd_path="https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/IsaacLab/Factory/factory_bolt_m16.usd"
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_bolt_m16.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class MoveObjectSceneWithGearCfg(MoveObjectSceneCfg):
+    """Scene Class for Move Object Task with Gear considered for kitting, sorting"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_gear_large.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class MoveObjectSceneWithNutCfg(MoveObjectSceneCfg):
+    """Scene Class for Move Object Task with Nut considered for kitting, sorting"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_nut_m16.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class MoveObjectSceneWithPegCfg(MoveObjectSceneCfg):
+    """Scene Class for Move Object Task with Peg considered for kitting, sorting"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_peg_8mm.usd",
+            scale=(1.5, 1.5, 1.5),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
+
+@configclass
+class MoveObjectSceneWithBoxCfg(MoveObjectSceneCfg):
+    """Scene Class for Move Object Task with Box considered for stacking, unstacking scenarios"""
+
+    object = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/Object",
+        spawn=sim_utils.UsdFileCfg(
+            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/green_block.usd",
+            scale=(0.7, 0.7, 0.7),
+            rigid_props=RigidBodyPropertiesCfg(
+                solver_position_iteration_count=16,
+                solver_velocity_iteration_count=1,
+                max_angular_velocity=1000.0,
+                max_linear_velocity=1000.0,
+                max_depenetration_velocity=5.0,
+                disable_gravity=False,
+            ),
+            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+    )
 
 
 ##
@@ -259,7 +384,7 @@ class TerminationsCfg:
         func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
     )
 
-    object_released = DoneTerm(func=my_mdp.check_released, params={"force_threshold": 0.0})
+    #object_released = DoneTerm(func=my_mdp.check_released, params={"force_threshold": 0.0})
 
 
 @configclass
@@ -285,7 +410,8 @@ class MoveEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for the Moving environment."""
 
     # Scene settings
-    scene: MoveObjectTableSceneCfg = MoveObjectTableSceneCfg(num_envs=4096, env_spacing=2.5)
+    #scene: MoveObjectSceneCfg = MoveObjectSceneCfg(num_envs=4096, env_spacing=2.5)
+    scene: MoveObjectSceneCfg | MoveObjectSceneWithBoltCfg | MoveObjectSceneWithGearCfg | MoveObjectSceneWithNutCfg | MoveObjectSceneWithPegCfg | MoveObjectSceneWithBoxCfg = MoveObjectSceneWithBoxCfg(num_envs=4096, env_spacing=2.5)
     # Basic settings
     observations: ObservationsCfg = ObservationsCfg()
     actions: ActionsCfg = ActionsCfg()
