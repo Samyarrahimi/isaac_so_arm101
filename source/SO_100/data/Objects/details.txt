@@ -1,14 +1,64 @@
 factory_bolt_m16:
-deactivated root_joint in the USD file and set /factory_bolt_m16 as default prim
+removed USD rigidbody API from subprim and added USD rigidbody API to root, deactivated root_joint in the USD file and set /factory_bolt_m16 as default prim
 
 factory_gear_large:
-set /factory_gear_large as default prim
+removed USD rigidbody API from subprim and added USD rigidbody API to root, set /factory_gear_large as default prim
 
 factory_nut_m16:
-set /factory_nut_m16 as default prim
+removed USD rigidbody API from subprim and added USD rigidbody API to root, set /factory_nut_m16 as default prim
 
 factory_peg_8mm:
-set /factory_peg_8mm as default prim
+removed USD rigidbody API from subprim and added USD rigidbody API to root, set /factory_peg_8mm as default prim
 
 green_block:
-set /green_block as default prim
+removed USD rigidbody API from subprim and added USD rigidbody API to root, set /green_block as default prim
+
+###########################################################################################################################################
+
+REMOVE CHILD API:
+
+import omni.usd
+from pxr import UsdPhysics
+stage = omni.usd.get_context().get_stage()
+root_prim = stage.GetDefaultPrim()
+
+# Remove RigidBodyAPI and MassAPI from child prims (factory_bolt_loose etc.)
+for child in root_prim.GetChildren():
+    if child.HasAPI(UsdPhysics.RigidBodyAPI):
+        child.RemoveAPI(UsdPhysics.RigidBodyAPI)
+        print(f"Removed RigidBodyAPI from: {child.GetName()} | Path: {child.GetPath()}")
+    if child.HasAPI(UsdPhysics.MassAPI):
+        child.RemoveAPI(UsdPhysics.MassAPI)
+        print(f"Removed MassAPI from: {child.GetName()} | Path: {child.GetPath()}")
+
+# Remove ArticulationRootAPI from root - IsaacLab rigid_props handles everything
+if root_prim.HasAPI(UsdPhysics.ArticulationRootAPI):
+    root_prim.RemoveAPI(UsdPhysics.ArticulationRootAPI)
+    print(f"Removed ArticulationRootAPI from: {root_prim.GetName()} | Path: {root_prim.GetPath()}")
+
+try:
+    from pxr import PhysxSchema
+    if root_prim.HasAPI(PhysxSchema.PhysxArticulationAPI):
+        root_prim.RemoveAPI(PhysxSchema.PhysxArticulationAPI)
+        print(f"Removed PhysxArticulationAPI from: {root_prim.GetName()} | Path: {root_prim.GetPath()}")
+except Exception:
+    pass
+
+stage.SetDefaultPrim(root_prim)
+stage.Save()
+print(f"Fixed: {root_prim.GetPath()}")
+
+
+###########################################################################################################################################
+ADD USD RIGIDBODY API TO ROOT:
+import omni.usd
+from pxr import UsdPhysics
+
+stage = omni.usd.get_context().get_stage()
+root_prim = stage.GetDefaultPrim()
+
+# Apply RigidBodyAPI to root prim
+UsdPhysics.RigidBodyAPI.Apply(root_prim)
+print(f"Applied RigidBodyAPI to: {root_prim.GetName()} | Path: {root_prim.GetPath()}")
+
+stage.Save()
