@@ -384,7 +384,7 @@ class TerminationsCfg:
         func=mdp.root_height_below_minimum, params={"minimum_height": -0.05, "asset_cfg": SceneEntityCfg("object")}
     )
 
-    #object_released = DoneTerm(func=my_mdp.check_released, params={"force_threshold": 0.0})
+    object_released = DoneTerm(func=my_mdp.check_released, params={"force_threshold": 0.0})
 
 
 @configclass
