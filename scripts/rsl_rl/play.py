@@ -211,6 +211,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         with torch.inference_mode():
             # agent stepping
             actions = policy(obs)
+            #print(f"[PLAY] actions: {actions}")
             # env stepping
             obs, _, dones, _ = env.step(actions)
         if args_cli.video:
