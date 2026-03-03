@@ -19,6 +19,7 @@ import isaaclab_tasks.manager_based.manipulation.lift.mdp as mdp
 from SO_100.tasks.move_object import mdp as my_mdp
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg, DeformableObjectCfg, RigidObjectCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
+from isaaclab.envs.mdp import randomize_visual_color
 from isaaclab.managers import CurriculumTermCfg as CurrTerm
 from isaaclab.managers import EventTermCfg as EventTerm
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
@@ -30,7 +31,8 @@ from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sensors.frame_transformer.frame_transformer_cfg import FrameTransformerCfg
 from isaaclab.sensors.contact_sensor.contact_sensor_cfg import ContactSensorCfg
 from isaaclab.sim.spawners.from_files.from_files_cfg import UsdFileCfg
-from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg, UsdFileCfg
+from isaaclab.sim.spawners.from_files.from_files_cfg import GroundPlaneCfg
+from isaaclab.sim.spawners.wrappers import MultiAssetSpawnerCfg
 from isaaclab.utils import configclass
 from isaaclab.sim.schemas.schemas_cfg import RigidBodyPropertiesCfg, ArticulationRootPropertiesCfg
 from isaaclab.utils.assets import ISAAC_NUCLEUS_DIR
@@ -44,6 +46,114 @@ from pathlib import Path
 
 TEMPLATE_ASSETS_DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
 
+# ---------------------------------------------------------------------------
+# Helpers for multi-object fine-tuning pool
+# ---------------------------------------------------------------------------
+
+def _object_usd(usd_path: str, scale: float) -> sim_utils.UsdFileCfg:
+    """UsdFileCfg for a graspable object. Rigid body is assigned at root by IsaacLab via rigid_props."""
+    return sim_utils.UsdFileCfg(
+        usd_path=usd_path,
+        scale=(scale, scale, scale),
+    )
+
+# 15-entry round-robin pool: 5 objects × 3 scales (×0.8, ×1.0, ×1.2 of base).
+# Move task base scales: factory objects = 1.5; green_block = 0.7.
+MULTI_OBJECT_ASSETS_CFG: list = [
+    # Bolt
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_bolt_m16.usd", 0.9),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_bolt_m16.usd", 1.0),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_bolt_m16.usd", 1.1),
+    # Gear
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_gear_large.usd", 0.6),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_gear_large.usd", 0.7),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_gear_large.usd", 0.8),
+    # Nut
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_nut_m16.usd", 0.9),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_nut_m16.usd", 1.0),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_nut_m16.usd", 1.1),
+    # Peg
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_peg_8mm.usd", 2.0),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_peg_8mm.usd", 2.1),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_peg_8mm.usd", 2.2),
+    # Green block
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/green_block.usd", 0.5),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/green_block.usd", 0.6),
+    _object_usd(f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/green_block.usd", 0.7),
+]
+
+
+# ---------------------------------------------------------------------------
+# Per-object RigidObjectCfg constants.
+# Defined at module level so they can be imported directly by env configs —
+# @configclass moves class-level fields into dataclass field machinery,
+# making them inaccessible as class attributes.
+# ---------------------------------------------------------------------------
+
+_RIGID_PROPS = RigidBodyPropertiesCfg(
+    solver_position_iteration_count=16,
+    solver_velocity_iteration_count=1,
+    max_angular_velocity=1000.0,
+    max_linear_velocity=1000.0,
+    max_depenetration_velocity=5.0,
+    disable_gravity=False,
+)
+
+BOLT_OBJECT_CFG = RigidObjectCfg(
+    prim_path="{ENV_REGEX_NS}/Object",
+    spawn=sim_utils.UsdFileCfg(
+        usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_bolt_m16.usd",
+        scale=(1.0, 1.0, 1.0),
+        rigid_props=_RIGID_PROPS,
+        articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+    ),
+    init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+)
+
+GEAR_OBJECT_CFG = RigidObjectCfg(
+    prim_path="{ENV_REGEX_NS}/Object",
+    spawn=sim_utils.UsdFileCfg(
+        usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_gear_large.usd",
+        scale=(0.6, 0.6, 0.8),
+        rigid_props=_RIGID_PROPS,
+        articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+    ),
+    init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+)
+
+NUT_OBJECT_CFG = RigidObjectCfg(
+    prim_path="{ENV_REGEX_NS}/Object",
+    spawn=sim_utils.UsdFileCfg(
+        usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_nut_m16.usd",
+        scale=(1.0, 1.0, 1.0),
+        rigid_props=_RIGID_PROPS,
+        articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+    ),
+    init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+)
+
+PEG_OBJECT_CFG = RigidObjectCfg(
+    prim_path="{ENV_REGEX_NS}/Object",
+    spawn=sim_utils.UsdFileCfg(
+        usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_peg_8mm.usd",
+        scale=(2.5, 2.5, 2.5),
+        rigid_props=_RIGID_PROPS,
+        articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+    ),
+    init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+)
+
+BOX_OBJECT_CFG = RigidObjectCfg(
+    prim_path="{ENV_REGEX_NS}/Object",
+    spawn=sim_utils.UsdFileCfg(
+        usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/green_block.usd",
+        scale=(0.6, 0.6, 0.6),
+        rigid_props=_RIGID_PROPS,
+        articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
+    ),
+    init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
+)
+
 
 @configclass
 class MoveObjectSceneCfg(InteractiveSceneCfg):
@@ -53,20 +163,18 @@ class MoveObjectSceneCfg(InteractiveSceneCfg):
     """
 
     # world
-    # ground = AssetBaseCfg(
-    #     prim_path="/World/ground",
-    #     spawn=sim_utils.GroundPlaneCfg(),
-    #     init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
-    # )
-
-    warehouse = AssetBaseCfg(
-        prim_path="/World/warehouse",
-        spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Environments/Simple_Warehouse/warehouse.usd"),
-        init_state=AssetBaseCfg.InitialStateCfg(
-            pos=(0.0, 0.0, -1.05),
-        ),
+    ground = AssetBaseCfg(
+        prim_path="/World/ground",
+        spawn=sim_utils.GroundPlaneCfg(),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
     )
-
+    # warehouse = AssetBaseCfg(
+    #     prim_path="/World/warehouse",
+    #     spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Environments/Simple_Warehouse/warehouse.usd"),
+    #     init_state=AssetBaseCfg.InitialStateCfg(
+    #         pos=(0.0, 0.0, -1.05),
+    #     ),
+    # )
 
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/Table",
@@ -75,7 +183,7 @@ class MoveObjectSceneCfg(InteractiveSceneCfg):
         ),
         init_state=AssetBaseCfg.InitialStateCfg(pos=(0.5, 0.0, 0.0), rot=(0.70711, 0.0, 0.0, 0.70711)),
     )
-    
+
     # lights
     light = AssetBaseCfg(
         prim_path="/World/light",
@@ -101,125 +209,41 @@ class MoveObjectSceneCfg(InteractiveSceneCfg):
     # end-effector sensor: will be populated by agent env cfg
     ee_frame: FrameTransformerCfg = MISSING
     #cube_marker: FrameTransformerCfg = MISSING
-    
+
     # contact sensor
     contact_sensor_moving: ContactSensorCfg = MISSING
     contact_sensor_fixed: ContactSensorCfg = MISSING
 
-    context_camera: TiledCameraCfg = MISSING
-    wrist_camera: TiledCameraCfg = MISSING
+    # Cameras are None during training (not needed by policy observations).
+    # PLAY configs enable them so play.py can save images.
+    context_camera: TiledCameraCfg | None = None
+    wrist_camera: TiledCameraCfg | None = None
 
 
 @configclass
 class MoveObjectSceneWithBoltCfg(MoveObjectSceneCfg):
     """Scene Class for Move Object Task with Bolt considered for kitting, sorting"""
-
-    # usd_path="https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/IsaacLab/Factory/factory_bolt_m16.usd"
-    object = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Object",
-        spawn=sim_utils.UsdFileCfg(
-            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_bolt_m16.usd",
-            scale=(1.5, 1.5, 1.5),
-            rigid_props=RigidBodyPropertiesCfg(
-                solver_position_iteration_count=16,
-                solver_velocity_iteration_count=1,
-                max_angular_velocity=1000.0,
-                max_linear_velocity=1000.0,
-                max_depenetration_velocity=5.0,
-                disable_gravity=False,
-            ),
-            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
-        ),
-        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
-    )
+    object = BOLT_OBJECT_CFG
 
 @configclass
 class MoveObjectSceneWithGearCfg(MoveObjectSceneCfg):
     """Scene Class for Move Object Task with Gear considered for kitting, sorting"""
-
-    object = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Object",
-        spawn=sim_utils.UsdFileCfg(
-            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_gear_large.usd",
-            scale=(1.5, 1.5, 1.5),
-            rigid_props=RigidBodyPropertiesCfg(
-                solver_position_iteration_count=16,
-                solver_velocity_iteration_count=1,
-                max_angular_velocity=1000.0,
-                max_linear_velocity=1000.0,
-                max_depenetration_velocity=5.0,
-                disable_gravity=False,
-            ),
-            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
-        ),
-        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
-    )
+    object = GEAR_OBJECT_CFG
 
 @configclass
 class MoveObjectSceneWithNutCfg(MoveObjectSceneCfg):
     """Scene Class for Move Object Task with Nut considered for kitting, sorting"""
-
-    object = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Object",
-        spawn=sim_utils.UsdFileCfg(
-            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_nut_m16.usd",
-            scale=(1.5, 1.5, 1.5),
-            rigid_props=RigidBodyPropertiesCfg(
-                solver_position_iteration_count=16,
-                solver_velocity_iteration_count=1,
-                max_angular_velocity=1000.0,
-                max_linear_velocity=1000.0,
-                max_depenetration_velocity=5.0,
-                disable_gravity=False,
-            ),
-            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
-        ),
-        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
-    )
+    object = NUT_OBJECT_CFG
 
 @configclass
 class MoveObjectSceneWithPegCfg(MoveObjectSceneCfg):
     """Scene Class for Move Object Task with Peg considered for kitting, sorting"""
-
-    object = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Object",
-        spawn=sim_utils.UsdFileCfg(
-            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/factory_peg_8mm.usd",
-            scale=(1.5, 1.5, 1.5),
-            rigid_props=RigidBodyPropertiesCfg(
-                solver_position_iteration_count=16,
-                solver_velocity_iteration_count=1,
-                max_angular_velocity=1000.0,
-                max_linear_velocity=1000.0,
-                max_depenetration_velocity=5.0,
-                disable_gravity=False,
-            ),
-            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
-        ),
-        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
-    )
+    object = PEG_OBJECT_CFG
 
 @configclass
 class MoveObjectSceneWithBoxCfg(MoveObjectSceneCfg):
     """Scene Class for Move Object Task with Box considered for stacking, unstacking scenarios"""
-
-    object = RigidObjectCfg(
-        prim_path="{ENV_REGEX_NS}/Object",
-        spawn=sim_utils.UsdFileCfg(
-            usd_path=f"{TEMPLATE_ASSETS_DATA_DIR}/Objects/green_block.usd",
-            scale=(0.7, 0.7, 0.7),
-            rigid_props=RigidBodyPropertiesCfg(
-                solver_position_iteration_count=16,
-                solver_velocity_iteration_count=1,
-                max_angular_velocity=1000.0,
-                max_linear_velocity=1000.0,
-                max_depenetration_velocity=5.0,
-                disable_gravity=False,
-            ),
-            articulation_props=ArticulationRootPropertiesCfg(articulation_enabled=False),
-        ),
-        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
-    )
+    object = BOX_OBJECT_CFG
 
 
 ##
@@ -269,7 +293,7 @@ class ObservationsCfg:
         joint_vel = ObsTerm(func=mdp.joint_vel_rel)#, noise=Unoise(n_min=-0.01, n_max=0.01))
         object_position = ObsTerm(func=mdp.object_position_in_robot_root_frame)
         target_object_position = ObsTerm(func=mdp.generated_commands, params={"command_name": "object_pose"})
-        actions = ObsTerm(func=mdp.last_action) 
+        actions = ObsTerm(func=mdp.last_action)
 
         def __post_init__(self):
             self.enable_corruption = True
@@ -285,15 +309,6 @@ class EventCfg:
 
     #reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
 
-    # reset_object_position = EventTerm(
-    #     func=mdp.reset_root_state_uniform,
-    #     mode="reset",
-    #     params={
-    #         "pose_range": {"x": (-0.1, 0.1), "y": (-0.2, 0.2), "z": (0.0, 0.0)},
-    #         "velocity_range": {},
-    #         "asset_cfg": SceneEntityCfg("object", body_names="Object"),
-    #     },
-    # )
     randomize_joints = EventTerm(
         func=my_mdp.randomize_robot_joint_positions,
         mode="reset",
@@ -343,6 +358,28 @@ class EventCfg:
             "gripper_closed_value": -0.1
         },
     )
+
+
+@configclass
+class EventCfgFineTune(EventCfg):
+    """EventCfg with per-reset visual color randomization for domain randomization.
+
+    Requires ``replicate_physics=False`` on the scene (set in the finetune env cfg).
+    Colors are sampled uniformly from the full RGB cube on every episode reset so the
+    policy cannot rely on object colour as a cue.
+    """
+
+    randomize_object_color: EventTerm = EventTerm(
+        func=randomize_visual_color,
+        mode="reset",
+        params={
+            "asset_cfg": SceneEntityCfg("object"),
+            "mesh_name": "/*/visuals",
+            "colors": {"r": (0.05, 1.0), "g": (0.05, 1.0), "b": (0.05, 1.0)},
+            "event_name": "randomize_object_color",
+        },
+    )
+
 
 @configclass
 class RewardsCfg:
@@ -410,7 +447,6 @@ class MoveEnvCfg(ManagerBasedRLEnvCfg):
     """Configuration for the Moving environment."""
 
     # Scene settings
-    #scene: MoveObjectSceneCfg = MoveObjectSceneCfg(num_envs=4096, env_spacing=2.5)
     scene: MoveObjectSceneCfg | MoveObjectSceneWithBoltCfg | MoveObjectSceneWithGearCfg | MoveObjectSceneWithNutCfg | MoveObjectSceneWithPegCfg | MoveObjectSceneWithBoxCfg = MoveObjectSceneWithBoxCfg(num_envs=4096, env_spacing=2.5)
     # Basic settings
     observations: ObservationsCfg = ObservationsCfg()
@@ -432,8 +468,10 @@ class MoveEnvCfg(ManagerBasedRLEnvCfg):
         self.sim.dt = 1.0 / 60.0
         self.sim.render_interval = self.decimation
 
-        self.sim.physx.bounce_threshold_velocity = 0.2
         self.sim.physx.bounce_threshold_velocity = 0.01
         self.sim.physx.gpu_found_lost_aggregate_pairs_capacity = 1024 * 1024 * 4
-        self.sim.physx.gpu_total_aggregate_pairs_capacity = 16 * 1024
+        self.sim.physx.gpu_total_aggregate_pairs_capacity = 64 * 1024
+        self.sim.physx.gpu_max_rigid_patch_count = 8 * 2**15  # 262144; default 163840 overflows with gear mesh
         self.sim.physx.friction_correlation_distance = 0.00625
+        #self.sim.physx.gpu_collision_stack_size = 2**29  # 512 MB; avoids collisionStackSize overflow with many envs
+        

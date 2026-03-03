@@ -70,8 +70,8 @@ class ReachSceneCfg(InteractiveSceneCfg):
         spawn=sim_utils.DomeLightCfg(color=(0.75, 0.75, 0.75), intensity=2500.0),
     )
 
-    context_camera: TiledCameraCfg = MISSING
-    wrist_camera: TiledCameraCfg = MISSING
+    context_camera: TiledCameraCfg | None = None
+    wrist_camera: TiledCameraCfg | None = None
     
 
 ##

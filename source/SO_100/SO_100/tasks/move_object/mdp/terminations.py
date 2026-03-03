@@ -309,7 +309,7 @@ def check_released(
     # Compute magnitude:
     f_mag = torch.linalg.norm(f_sum, dim=-1)  # shape (num_envs,)
 
-    print("Force magnitudes:", f_mag)  # Debug print
+    #print("Force magnitudes:", f_mag)  # Debug print
     
     # boolean mask
     grasped_mask = f_mag > force_threshold  # shape (num_envs,)
