@@ -147,7 +147,13 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # save resume path before creating a new log_dir
     if agent_cfg.resume or agent_cfg.algorithm.class_name == "Distillation":
-        resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
+        # Support loading from a different experiment than the one being saved to
+        # (e.g. fine-tuning: load from "grasp_object", save to "grasp_object_finetune")
+        if args_cli.load_experiment_name is not None:
+            load_root_path = os.path.abspath(os.path.join("logs", "rsl_rl", args_cli.load_experiment_name))
+        else:
+            load_root_path = log_root_path
+        resume_path = get_checkpoint_path(load_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 
     # wrap for video recording
     if args_cli.video:
