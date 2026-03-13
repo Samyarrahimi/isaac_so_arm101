@@ -51,10 +51,44 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
             preserve_order=True,
             use_default_offset=True,
         )
+        self.actions.gripper_action = mdp.BinaryJointPositionActionCfg(
+            asset_name="robot",
+            joint_names=["gripper"],
+            open_command_expr={"gripper": 0.5},
+            close_command_expr={"gripper": 0.0},
+        )
+        
         # override command generator body
         # end-effector is along z-direction
         self.commands.ee_pose.body_name = ["gripper"]
         # self.commands.ee_pose.ranges.pitch = (math.pi, math.pi)
+
+        # mesh for context camera (not a necessity but just to make it nicer)
+        # rotation here (0.8601, -0.4253, -0.1244, 0.2535) is not the same as rotation in context_camera but they look similar
+        # position is absolutely correct but the orientation is a bit off. at the end it does not matter as we will not use the camera in Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd for observations, we will use it just for visualization. The important thing is that the camera pose is correct, which it is.
+        # this just acts as a mesh which is also not a necessity)
+        # self.scene.context_camera_mesh = AssetBaseCfg(
+        #     prim_path="{ENV_REGEX_NS}/Robot/base/context_camera_mesh",
+        #     init_state=AssetBaseCfg.InitialStateCfg(
+        #         pos=(0.8, -1.5, 1.7),
+        #         rot=(0.8601, -0.4253, -0.1244, 0.2535),
+        #     ),
+        #     spawn=UsdFileCfg(
+        #         usd_path=f"{ISAAC_NUCLEUS_DIR}/Sensors/Sensing/SG2/H60YA/Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd",
+        #         scale=(1.0, 1.0, 1.0),
+        #     ),
+        # )
+
+@configclass
+class SoArm100ReachEnvCfg_PLAY(SoArm100ReachEnvCfg):
+    def __post_init__(self):
+        # post init of parent
+        super().__post_init__()
+        # make a smaller scene for play
+        self.scene.num_envs = 4
+        self.scene.env_spacing = 2.5
+        # disable randomization for play
+        self.observations.policy.enable_corruption = False
 
         self.scene.context_camera = TiledCameraCfg(
             prim_path="{ENV_REGEX_NS}/Robot/base/context_camera",
@@ -96,33 +130,6 @@ class SoArm100ReachEnvCfg(ReachEnvCfg):
                 convention="opengl",
             ),
         )
-
-        # mesh for context camera (not a necessity but just to make it nicer)
-        # rotation here (0.8601, -0.4253, -0.1244, 0.2535) is not the same as rotation in context_camera but they look similar
-        # position is absolutely correct but the orientation is a bit off. at the end it does not matter as we will not use the camera in Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd for observations, we will use it just for visualization. The important thing is that the camera pose is correct, which it is.
-        # this just acts as a mesh which is also not a necessity)
-        # self.scene.context_camera_mesh = AssetBaseCfg(
-        #     prim_path="{ENV_REGEX_NS}/Robot/base/context_camera_mesh",
-        #     init_state=AssetBaseCfg.InitialStateCfg(
-        #         pos=(0.8, -1.5, 1.7),
-        #         rot=(0.8601, -0.4253, -0.1244, 0.2535),
-        #     ),
-        #     spawn=UsdFileCfg(
-        #         usd_path=f"{ISAAC_NUCLEUS_DIR}/Sensors/Sensing/SG2/H60YA/Camera_SG2_OX03CC_5200_GMSL2_H60YA.usd",
-        #         scale=(1.0, 1.0, 1.0),
-        #     ),
-        # )
-
-@configclass
-class SoArm100ReachEnvCfg_PLAY(SoArm100ReachEnvCfg):
-    def __post_init__(self):
-        # post init of parent
-        super().__post_init__()
-        # make a smaller scene for play
-        self.scene.num_envs = 4
-        self.scene.env_spacing = 2.5
-        # disable randomization for play
-        self.observations.policy.enable_corruption = False
 
 
 # ----------------------------------------------------------------

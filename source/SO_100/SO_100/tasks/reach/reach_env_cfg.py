@@ -39,19 +39,19 @@ class ReachSceneCfg(InteractiveSceneCfg):
     """Configuration for the scene with a robotic arm."""
 
     # world
-    # ground = AssetBaseCfg(
-    #     prim_path="/World/ground",
-    #     spawn=sim_utils.GroundPlaneCfg(),
-    #     init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
-    # )
-
-    warehouse = AssetBaseCfg(
-        prim_path="/World/warehouse",
-        spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Environments/Simple_Warehouse/warehouse.usd"),
-        init_state=AssetBaseCfg.InitialStateCfg(
-            pos=(0.0, 0.0, -1.05),
-        ),
+    ground = AssetBaseCfg(
+        prim_path="/World/ground",
+        spawn=sim_utils.GroundPlaneCfg(),
+        init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, -1.05)),
     )
+
+    # warehouse = AssetBaseCfg(
+    #     prim_path="/World/warehouse",
+    #     spawn=UsdFileCfg(usd_path=f"{ISAAC_NUCLEUS_DIR}/Environments/Simple_Warehouse/warehouse.usd"),
+    #     init_state=AssetBaseCfg.InitialStateCfg(
+    #         pos=(0.0, 0.0, -1.05),
+    #     ),
+    # )
 
     table = AssetBaseCfg(
         prim_path="{ENV_REGEX_NS}/table",
@@ -104,7 +104,7 @@ class ActionsCfg:
     """Action specifications for the MDP."""
 
     arm_action: ActionTerm = MISSING
-    gripper_action: ActionTerm | None = None
+    gripper_action: ActionTerm = MISSING
 
 
 @configclass
