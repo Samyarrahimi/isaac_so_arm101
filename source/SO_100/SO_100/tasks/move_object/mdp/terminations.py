@@ -185,7 +185,7 @@ def randomize_robot_joint_positions(
     return success
 
 
-def randomize_shoulder_rotation(
+def randomize_shoulder_pan(
         env: ManagerBasedRLEnv,
         env_ids: torch.Tensor,
         robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
@@ -223,6 +223,53 @@ def randomize_shoulder_rotation(
     robot.reset(env_ids=env_ids)
     return torch.ones((len(ids),), dtype=torch.bool, device=env.device)
 
+
+def randomize_elbow(
+        env: ManagerBasedRLEnv,
+        env_ids: torch.Tensor,
+        robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+        min_angle: float = -3.14,
+        max_angle: float = 0.0,
+    ) -> None:
+    """Randomise the elbow_flex joint for each environment in env_ids."""
+    robot = env.scene[robot_cfg.name]
+    current_joint_pos = robot.data.joint_pos[env_ids].clone()
+    current_joint_vel = robot.data.joint_vel[env_ids].clone()
+
+    ids = env_ids.cpu().tolist()
+    joint_names = robot.data.joint_names
+    j_idx = joint_names.index("elbow_flex")
+
+    for idx in range(len(ids)):
+        current_joint_pos[idx, j_idx] = random.uniform(min_angle, max_angle)
+
+    robot.write_joint_state_to_sim(current_joint_pos, current_joint_vel, env_ids=env_ids)
+    robot.reset(env_ids=env_ids)
+    return torch.ones((len(ids),), dtype=torch.bool, device=env.device)
+
+
+def randomize_wrist_flex(
+        env: ManagerBasedRLEnv,
+        env_ids: torch.Tensor,
+        robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),
+        min_angle: float = -1.57,
+        max_angle: float = 1.57,
+    ) -> None:
+    """Randomise the wrist_flex joint for each environment in env_ids."""
+    robot = env.scene[robot_cfg.name]
+    current_joint_pos = robot.data.joint_pos[env_ids].clone()
+    current_joint_vel = robot.data.joint_vel[env_ids].clone()
+
+    ids = env_ids.cpu().tolist()
+    joint_names = robot.data.joint_names
+    j_idx = joint_names.index("wrist_flex")
+
+    for idx in range(len(ids)):
+        current_joint_pos[idx, j_idx] = random.uniform(min_angle, max_angle)
+
+    robot.write_joint_state_to_sim(current_joint_pos, current_joint_vel, env_ids=env_ids)
+    robot.reset(env_ids=env_ids)
+    return torch.ones((len(ids),), dtype=torch.bool, device=env.device)
 
 def grasp_object(
         env: ManagerBasedRLEnv,
@@ -315,7 +362,7 @@ def check_released(
     grasped_mask = f_mag > force_threshold  # shape (num_envs,)
     return ~grasped_mask.to(env.device)
 
-def randomize_shoulder_pitch(
+def randomize_shoulder_lift(
         env: ManagerBasedRLEnv,
         env_ids: torch.Tensor,
         robot_cfg: SceneEntityCfg = SceneEntityCfg("robot"),

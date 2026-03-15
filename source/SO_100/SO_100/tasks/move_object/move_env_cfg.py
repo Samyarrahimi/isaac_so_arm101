@@ -8,6 +8,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+import math
 from dataclasses import MISSING
 
 import isaaclab.sim as sim_utils
@@ -255,18 +256,20 @@ class MoveObjectSceneWithBoxCfg(MoveObjectSceneCfg):
 class CommandsCfg:
     """Command terms for the MDP."""
 
-    object_pose = mdp.UniformPoseCommandCfg(
+    object_pose = my_mdp.UniformDiskPoseCommandCfg(
         asset_name="robot",
         body_name=MISSING,  # will be set by agent env cfg
         resampling_time_range=(5.0, 5.0),
         debug_vis=True,
-        ranges=mdp.UniformPoseCommandCfg.Ranges(
-            pos_x=(-0.1, 0.1),
-            pos_y=(-0.3, -0.1),
-            pos_z=(0.2, 0.35),
-            roll=(0.0, 0.0), # x axis
-            pitch=(0.0, 0.0), # y axis 180 degree = 3.14 rad
-            yaw=(0.0, 0.0), # z axis
+        ranges=my_mdp.UniformDiskPoseCommandCfg.Ranges(
+            r_min=0.05,
+            r_max=0.5,
+            theta_min=-(math.pi + math.pi / 12),  # -195°: front semicircle + 15° into back from right side
+            theta_max=math.pi / 12,               #   15°: 15° into back from left side
+            pos_z=(0.05, 0.4),
+            roll=(0.0, 0.0),
+            pitch=(0.0, 0.0),
+            yaw=(0.0, 0.0),
         ),
     )
 
@@ -309,17 +312,17 @@ class EventCfg:
 
     #reset_all = EventTerm(func=mdp.reset_scene_to_default, mode="reset")
 
-    randomize_joints = EventTerm(
-        func=my_mdp.randomize_robot_joint_positions,
-        mode="reset",
-        params={
-            "robot_cfg": SceneEntityCfg("robot"),
-            "joint_noise_std": 0.05,
-        },
-    )
+    # randomize_joints = EventTerm(
+    #     func=my_mdp.randomize_robot_joint_positions,
+    #     mode="reset",
+    #     params={
+    #         "robot_cfg": SceneEntityCfg("robot"),
+    #         "joint_noise_std": 0.1,
+    #     },
+    # )
 
-    random_shoulder_rotation = EventTerm(
-        func=my_mdp.randomize_shoulder_rotation,
+    random_shoulder_pan = EventTerm(
+        func=my_mdp.randomize_shoulder_pan,
         mode="reset",
         params={
             "robot_cfg": SceneEntityCfg("robot"),
@@ -328,13 +331,33 @@ class EventCfg:
         },
     )
 
-    random_shoulder_pitch = EventTerm(
-        func=my_mdp.randomize_shoulder_pitch,
+    random_shoulder_lift = EventTerm(
+        func=my_mdp.randomize_shoulder_lift,
         mode="reset",
         params={
             "robot_cfg": SceneEntityCfg("robot"),
             "min_angle": 0.0,
-            "max_angle":  3.48,
+            "max_angle":  2.1,
+        },
+    )
+
+    randomize_elbow = EventTerm(
+        func=my_mdp.randomize_elbow,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "min_angle": -3.14,
+            "max_angle": 0.0,
+        },
+    )
+
+    randomize_wrist_flex = EventTerm(
+        func=my_mdp.randomize_wrist_flex,
+        mode="reset",
+        params={
+            "robot_cfg": SceneEntityCfg("robot"),
+            "min_angle": -2.4,
+            "max_angle": 1.17,
         },
     )
 

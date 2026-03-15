@@ -113,13 +113,17 @@ class SoArm100MoveObjectEnvCfg(MoveEnvCfg):
         # Set the body name for the end effector
         self.commands.object_pose.body_name = ["gripper"]
 
+        # Grasp offset for DexCube (scale 0.3): place object between closed fingertips.
+        self.events.reset_object_position.params["local_offset_xyz"] = (0.0, -0.09, 0.0)
+        self.events.gripper_grasp_object.params["gripper_closed_value"] = -0.05
+
         # Set DexCube as object for pretraining
         self.scene.object = RigidObjectCfg(
             prim_path="{ENV_REGEX_NS}/Object",
             init_state=RigidObjectCfg.InitialStateCfg(pos=(0.2, 0.0, 0.015)),
             spawn=UsdFileCfg(
                 usd_path=f"{ISAAC_NUCLEUS_DIR}/Props/Blocks/DexCube/dex_cube_instanceable.usd",
-                scale=(0.5, 0.5, 0.5),
+                scale=(0.3, 0.3, 0.3),
                 rigid_props=RigidBodyPropertiesCfg(
                     solver_position_iteration_count=16,
                     solver_velocity_iteration_count=1,
@@ -290,6 +294,8 @@ class SoArm100MoveBoltFinetuneEnvCfg(SoArm100MoveObjectEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.scene.object = BOLT_OBJECT_CFG
+        self.events.reset_object_position.params["local_offset_xyz"] = (0.0, -0.09, -0.015)
+        self.events.gripper_grasp_object.params["gripper_closed_value"] = -0.05
         # replicate_physics=True (default): all envs spawn the same bolt →
         # PhysX solves physics once and tiles, which is faster and avoids
         # totalAggregatePairsCapacity overflow.
@@ -305,7 +311,7 @@ class SoArm100MoveBoltFinetuneEnvCfg_PLAY(SoArm100MoveBoltFinetuneEnvCfg):
         self.scene.env_spacing = 2.5
         self.observations.policy.enable_corruption = False
         self.scene.replicate_physics = False
-        self.events = EventCfgFineTune()
+        self.events.randomize_object_color = EventCfgFineTune().randomize_object_color
         self.scene.context_camera = _CONTEXT_CAMERA_CFG
         self.scene.wrist_camera = _WRIST_CAMERA_CFG
 
@@ -315,6 +321,8 @@ class SoArm100MoveGearFinetuneEnvCfg(SoArm100MoveObjectEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.scene.object = GEAR_OBJECT_CFG
+        self.events.reset_object_position.params["local_offset_xyz"] = (0.02, -0.09, -0.01)
+        self.events.gripper_grasp_object.params["gripper_closed_value"] = -0.1
 
 
 @configclass
@@ -325,7 +333,7 @@ class SoArm100MoveGearFinetuneEnvCfg_PLAY(SoArm100MoveGearFinetuneEnvCfg):
         self.scene.env_spacing = 2.5
         self.observations.policy.enable_corruption = False
         self.scene.replicate_physics = False
-        self.events = EventCfgFineTune()
+        self.events.randomize_object_color = EventCfgFineTune().randomize_object_color
         self.scene.context_camera = _CONTEXT_CAMERA_CFG
         self.scene.wrist_camera = _WRIST_CAMERA_CFG
 
@@ -335,6 +343,8 @@ class SoArm100MoveNutFinetuneEnvCfg(SoArm100MoveObjectEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.scene.object = NUT_OBJECT_CFG
+        self.events.reset_object_position.params["local_offset_xyz"] = (0.005, -0.09, -0.016)
+        self.events.gripper_grasp_object.params["gripper_closed_value"] = -0.1
 
 
 @configclass
@@ -345,7 +355,7 @@ class SoArm100MoveNutFinetuneEnvCfg_PLAY(SoArm100MoveNutFinetuneEnvCfg):
         self.scene.env_spacing = 2.5
         self.observations.policy.enable_corruption = False
         self.scene.replicate_physics = False
-        self.events = EventCfgFineTune()
+        self.events.randomize_object_color = EventCfgFineTune().randomize_object_color
         self.scene.context_camera = _CONTEXT_CAMERA_CFG
         self.scene.wrist_camera = _WRIST_CAMERA_CFG
 
@@ -355,6 +365,8 @@ class SoArm100MovePegFinetuneEnvCfg(SoArm100MoveObjectEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.scene.object = PEG_OBJECT_CFG
+        self.events.reset_object_position.params["local_offset_xyz"] = (0.0, -0.09, -0.03)
+        self.events.gripper_grasp_object.params["gripper_closed_value"] = -0.1
 
 
 @configclass
@@ -365,7 +377,7 @@ class SoArm100MovePegFinetuneEnvCfg_PLAY(SoArm100MovePegFinetuneEnvCfg):
         self.scene.env_spacing = 2.5
         self.observations.policy.enable_corruption = False
         self.scene.replicate_physics = False
-        self.events = EventCfgFineTune()
+        self.events.randomize_object_color = EventCfgFineTune().randomize_object_color
         self.scene.context_camera = _CONTEXT_CAMERA_CFG
         self.scene.wrist_camera = _WRIST_CAMERA_CFG
 
@@ -375,6 +387,8 @@ class SoArm100MoveBoxFinetuneEnvCfg(SoArm100MoveObjectEnvCfg):
     def __post_init__(self):
         super().__post_init__()
         self.scene.object = BOX_OBJECT_CFG
+        self.events.reset_object_position.params["local_offset_xyz"] = (0.0, -0.09, 0.0)
+        self.events.gripper_grasp_object.params["gripper_closed_value"] = 0.0
 
 
 @configclass
@@ -385,6 +399,6 @@ class SoArm100MoveBoxFinetuneEnvCfg_PLAY(SoArm100MoveBoxFinetuneEnvCfg):
         self.scene.env_spacing = 2.5
         self.observations.policy.enable_corruption = False
         self.scene.replicate_physics = False
-        self.events = EventCfgFineTune()
+        self.events.randomize_object_color = EventCfgFineTune().randomize_object_color
         self.scene.context_camera = _CONTEXT_CAMERA_CFG
         self.scene.wrist_camera = _WRIST_CAMERA_CFG
